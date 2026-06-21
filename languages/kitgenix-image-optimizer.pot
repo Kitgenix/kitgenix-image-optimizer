@@ -1,0 +1,936 @@
+# Copyright (C) 2026 Kitgenix
+# This file is distributed under the GPLv3 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Kitgenix Image Optimizer 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/kitgenix-image-optimizer\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-06-16T08:12:48+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: kitgenix-image-optimizer\n"
+
+#. Plugin Name of the plugin
+#: kitgenix-image-optimizer.php
+#: includes/Admin/Settings_UI.php:59
+#: includes/Admin/Settings_UI.php:214
+msgid "Kitgenix Image Optimizer"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: kitgenix-image-optimizer.php
+msgid "https://wordpress.org/plugins/kitgenix-image-optimizer/"
+msgstr ""
+
+#. Description of the plugin
+#: kitgenix-image-optimizer.php
+#: kitgenix-image-optimizer.php:424
+msgid "Optimize, compress, and resize images in your WordPress media library with automatic on-upload processing and bulk optimization tools."
+msgstr ""
+
+#. Author of the plugin
+#: kitgenix-image-optimizer.php
+#: includes/Admin/Settings_UI.php:213
+#: kitgenix-image-optimizer.php:111
+#: kitgenix-image-optimizer.php:112
+#: kitgenix-image-optimizer.php:491
+msgid "Kitgenix"
+msgstr ""
+
+#. Author URI of the plugin
+#: kitgenix-image-optimizer.php
+msgid "https://kitgenix.com/"
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:31
+#: includes/Admin/Settings_UI.php:60
+#: includes/Core/Media_Column.php:358
+#: kitgenix-image-optimizer.php:420
+msgid "Image Optimizer"
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:49
+msgid "Optimization is not available for this file type."
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:67
+#: includes/Core/Optimizer.php:387
+msgid "Optimization failed."
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:68
+#: includes/Admin/Settings_UI.php:577
+#: includes/Core/Media_Column.php:66
+#: includes/Core/Media_Column.php:253
+msgid "Error"
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:71
+msgid "Try Again"
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:82
+#: includes/Admin/Attachment_Panel.php:95
+#: includes/Admin/Settings_UI.php:134
+#: includes/Admin/Settings_UI.php:468
+#: includes/Admin/Settings_UI.php:580
+#: includes/Core/CLI.php:149
+#: includes/Core/Media_Column.php:84
+#: includes/Core/Media_Column.php:121
+msgid "Optimized"
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:94
+#: includes/Admin/Settings_UI.php:549
+msgid "Original"
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:96
+msgid "Saved"
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:101
+msgid "Date"
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:108
+#: includes/Admin/Attachment_Panel.php:168
+#: includes/Admin/Settings_UI.php:591
+#: includes/Admin/Settings_UI.php:594
+#: includes/Admin/Settings_UI.php:596
+#: includes/Core/Media_Column.php:71
+#: includes/Core/Media_Column.php:101
+#: includes/Core/Media_Column.php:252
+msgid "Re-optimize"
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:112
+msgid "Restore Original"
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:119
+msgid "Not Optimized"
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:120
+msgid "This image has not been optimized yet."
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:122
+msgid "Optimize Now"
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:162
+#: includes/Admin/Settings_UI.php:126
+#: includes/Core/Media_Column.php:249
+msgid "Optimizing…"
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:163
+msgid "Optimized!"
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:164
+msgid "Failed — please retry."
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:165
+#: includes/Admin/Settings_UI.php:139
+#: includes/Core/Media_Column.php:250
+msgid "Restoring…"
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:166
+#: includes/Admin/Settings_UI.php:142
+#: includes/Core/Media_Column.php:251
+msgid "Restore original image? This will undo the optimization."
+msgstr ""
+
+#: includes/Admin/Attachment_Panel.php:167
+msgid "Restore failed."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:127
+msgid "All done! Every image has been optimized."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:128
+#: includes/Admin/Settings_UI.php:512
+msgid "All Images Optimized"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:129
+msgid "An error occurred. Please try again."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:130
+#: includes/Admin/Settings_UI.php:512
+msgid "Start Bulk Optimization"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:131
+msgid "Stop"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:132
+#: includes/Admin/Settings_UI.php:515
+msgid "Bulk Re-Optimize"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:133
+#: includes/Core/Optimizer.php:277
+msgid "All images have been re-optimized."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:135
+#: includes/Admin/Settings_UI.php:475
+#: includes/Admin/Settings_UI.php:585
+#: includes/Core/CLI.php:150
+msgid "Pending"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:136
+msgid "saved"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:137
+msgid "of"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:138
+msgid "images"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:140
+msgid "Restored — ready to re-optimize"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:141
+msgid "Restore failed"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:168
+#: includes/Core/Optimizer.php:186
+#: includes/Core/Optimizer.php:216
+#: includes/Core/Optimizer.php:256
+#: includes/Core/Optimizer.php:549
+msgid "Insufficient permissions."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:216
+msgid "Compress and resize images on upload or in bulk to keep your site fast without sacrificing quality."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:223
+#: includes/Admin/Settings_UI.php:753
+msgid "Documentation"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:224
+msgid "Review Plugin"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:225
+msgid "Support Request"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:226
+#: includes/Admin/Settings_UI.php:649
+msgid "Support Kitgenix"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:246
+#: kitgenix-image-optimizer.php:660
+msgid "Settings"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:247
+msgid "Images"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:248
+msgid "Support"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:249
+msgid "Log"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:299
+msgid "General"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:302
+msgid "Enable Image Optimizer"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:303
+msgid "Enable image optimization"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:306
+msgid "Optimize on Upload"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:307
+msgid "Automatically optimize images when they are uploaded to the media library"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:316
+msgid "Lossless"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:318
+msgid "Highest quality, smallest savings"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:321
+msgid "Normal"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:323
+msgid "Balanced quality and savings"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:326
+msgid "Aggressive"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:328
+msgid "More savings, minor quality loss"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:331
+msgid "Ultra"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:333
+msgid "Max savings, visible quality loss"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:336
+msgid "Custom"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:337
+msgid "Custom values"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:338
+msgid "Use the quality fields below"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:343
+msgid "Quality"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:346
+msgid "Compression Level"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:359
+msgid "Preset levels override the JPEG and WebP quality fields below. Select Custom to use your own values."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:362
+msgid "JPEG Quality"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:364
+#: includes/Admin/Settings_UI.php:369
+msgid "Used only when Compression Level is set to Custom."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:367
+msgid "WebP Quality"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:372
+msgid "PNG Compression"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:374
+msgid "PNG compression level (0–9). Higher = smaller file, slower processing."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:382
+msgid "Resizing"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:385
+msgid "Max Width (px)"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:387
+msgid "Images wider than this will be scaled down (aspect ratio preserved). Set to 0 to disable."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:390
+msgid "Max Height (px)"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:392
+msgid "Images taller than this will be scaled down (aspect ratio preserved). Set to 0 to disable."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:399
+msgid "Advanced"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:402
+msgid "Convert to WebP"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:403
+msgid "Convert JPEG and PNG images to WebP format on upload (requires GD or Imagick with WebP support)"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:406
+msgid "Strip Image Metadata"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:407
+msgid "Remove EXIF and other metadata from images to reduce file size"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:410
+msgid "Optimize Thumbnails"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:411
+msgid "Also compress registered image sub-sizes when optimizing an attachment"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:414
+msgid "Backup Originals"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:415
+msgid "Keep a copy of the original file before optimization (stored alongside the image as filename-kitgenix-original.ext)"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:418
+msgid "Skip Animated GIFs"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:419
+msgid "Skip animated GIF files to preserve their animation (recommended)"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:422
+msgid "Lazy Load Images"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:423
+msgid "Add loading=\"lazy\" to all frontend images that lack a loading attribute (LCP candidate preserved as eager)"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:430
+msgid "Exclusions"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:433
+msgid "Skip files smaller than (KB)"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:435
+msgid "Files smaller than this size (in KB) will be skipped. Set to 0 to disable."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:438
+msgid "Skip by Filename Pattern"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:439
+msgid "e.g. logo, banner, -thumb"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:440
+msgid "Comma-separated list of filename substrings or glob patterns to skip. Example: logo, banner-*.png"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:445
+msgid "Save Settings"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:461
+msgid "Total Images"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:463
+msgid "JPEG, PNG, WebP &amp; GIF files"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:470
+msgid "complete"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:477
+msgid "Not yet processed"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:482
+msgid "Space Saved"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:484
+msgid "Cumulative disk space reclaimed"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:491
+msgid "Bulk Optimization"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:492
+msgid "Compress all existing images in your media library. Runs one image at a time so it never times out, even on large sites."
+msgstr ""
+
+#. translators: 1: optimized count, 2: total count, 3: percent
+#: includes/Admin/Settings_UI.php:502
+#, php-format
+msgid "%1$s of %2$s images optimized (%3$d%%)"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:514
+msgid "Re-process all images using current quality settings, including already-optimised ones."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:543
+msgid "Recent Images"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:547
+msgid "Preview"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:548
+msgid "File"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:550
+msgid "Savings"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:551
+msgid "Status"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:552
+msgid "Actions"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:576
+#: includes/Core/Media_Column.php:62
+msgid "Optimization failed"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:589
+#: includes/Core/Media_Column.php:52
+#: includes/Core/Media_Column.php:254
+msgid "Optimize"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:592
+msgid "Restore"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:628
+msgid "Images optimized"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:630
+msgid "Media library images already compressed by this plugin."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:633
+msgid "Images in library"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:635
+msgid "Total eligible JPEG, PNG, WebP, and GIF files."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:638
+#: includes/Core/CLI.php:151
+msgid "Total space saved"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:640
+msgid "Cumulative disk space reclaimed by compression."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:648
+msgid "Help keep Kitgenix independent"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:650
+msgid "Kitgenix Image Optimizer is free, lightweight, and privacy-first — no external API, no data sent off-site. If it saves you bandwidth costs or keeps your site loading fast for visitors, please consider supporting the work. Your support funds compatibility updates, security hardening, and new features."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:653
+msgid "Support this plugin"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:655
+msgid "Buy Me a Coffee"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:656
+msgid "Become a member"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:658
+msgid "Via Buy Me a Coffee. Cancel anytime."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:664
+msgid "Your site impact"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:665
+msgid "Here is what Kitgenix Image Optimizer has achieved on your site so far:"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:693
+msgid "Activity Log"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:694
+msgid "Recent optimization and settings events (newest first, up to 100 entries)."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:697
+msgid "No events recorded yet."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:702
+msgid "Time"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:703
+msgid "Event"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:704
+msgid "Outcome"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:705
+#: kitgenix-image-optimizer.php:590
+msgid "Details"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:739
+msgid "Clear all log entries?"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:739
+msgid "Clear Log"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:747
+msgid "Help and links"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:750
+msgid "Need Help?"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:751
+msgid "Open the documentation for setup guidance or send us a support request if you need help configuring the plugin."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:754
+msgid "Request Support"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:759
+msgid "Visit Our Official Facebook Group"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:760
+msgid "Join the Kitgenix community to ask questions, share feedback, and keep up with product updates."
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:762
+msgid "Join Group"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:767
+msgid "Follow Us"
+msgstr ""
+
+#: includes/Admin/Settings_UI.php:768
+msgid "Keep up with new releases, tutorials, and product news across our channels."
+msgstr ""
+
+#: includes/Core/CLI.php:85
+msgid "All images are already optimized."
+msgstr ""
+
+#. translators: %d: total image count
+#: includes/Core/CLI.php:90
+#, php-format
+msgid "Optimizing %d images…"
+msgstr ""
+
+#. translators: 1: attachment ID, 2: error message
+#. translators: 1: attachment ID, 2: error
+#: includes/Core/CLI.php:105
+#: includes/Core/CLI.php:214
+#, php-format
+msgid "ID %1$d — %2$s"
+msgstr ""
+
+#. translators: 1: optimized count, 2: total, 3: errors
+#: includes/Core/CLI.php:120
+#, php-format
+msgid "Done. Optimized %1$d of %2$d images. Errors: %3$d."
+msgstr ""
+
+#: includes/Core/CLI.php:148
+msgid "Total images"
+msgstr ""
+
+#: includes/Core/CLI.php:178
+msgid "Please provide --id=<attachment_id>."
+msgstr ""
+
+#: includes/Core/CLI.php:183
+#: includes/Core/Optimizer.php:371
+#: includes/Core/Optimizer.php:559
+msgid "Attachment file not found."
+msgstr ""
+
+#: includes/Core/CLI.php:188
+msgid "No backup file found. Was \"Backup Originals\" enabled when this image was optimized?"
+msgstr ""
+
+#: includes/Core/CLI.php:192
+msgid "Could not restore backup file."
+msgstr ""
+
+#. translators: %d: attachment ID
+#: includes/Core/CLI.php:200
+#, php-format
+msgid "Attachment #%d restored successfully."
+msgstr ""
+
+#. translators: 1: attachment ID, 2: space saved
+#: includes/Core/CLI.php:221
+#, php-format
+msgid "Attachment #%1$d optimized. Saved %2$s."
+msgstr ""
+
+#: includes/Core/Event_Log.php:67
+msgid "No recent events recorded yet."
+msgstr ""
+
+#: includes/Core/Event_Log.php:83
+msgid "Unknown time"
+msgstr ""
+
+#: includes/Core/Media_Column.php:30
+msgid "Compression"
+msgstr ""
+
+#: includes/Core/Media_Column.php:41
+msgid "—"
+msgstr ""
+
+#: includes/Core/Media_Column.php:95
+msgid "Restore original"
+msgstr ""
+
+#: includes/Core/Media_Column.php:120
+msgid "All images (compression)"
+msgstr ""
+
+#: includes/Core/Media_Column.php:122
+msgid "Not optimized"
+msgstr ""
+
+#: includes/Core/Media_Column.php:123
+msgid "Errors"
+msgstr ""
+
+#: includes/Core/Media_Column.php:366
+msgid "images in library"
+msgstr ""
+
+#: includes/Core/Media_Column.php:373
+msgid "optimized"
+msgstr ""
+
+#: includes/Core/Media_Column.php:381
+msgid "pending"
+msgstr ""
+
+#: includes/Core/Media_Column.php:388
+msgid "space saved"
+msgstr ""
+
+#: includes/Core/Media_Column.php:396
+msgid "Bulk Optimize &rarr;"
+msgstr ""
+
+#: includes/Core/Media_Column.php:397
+msgid "Re-Optimize All &rarr;"
+msgstr ""
+
+#: includes/Core/Optimizer.php:191
+#: includes/Core/Optimizer.php:554
+msgid "Invalid attachment ID."
+msgstr ""
+
+#: includes/Core/Optimizer.php:200
+msgid "Image optimized."
+msgstr ""
+
+#: includes/Core/Optimizer.php:221
+msgid "All images have been optimized."
+msgstr ""
+
+#. translators: %1$d: attachment ID, %2$d: remaining images count
+#: includes/Core/Optimizer.php:241
+#, php-format
+msgid "Optimized attachment #%1$d. %2$d remaining."
+msgstr ""
+
+#. translators: %d: attachment ID
+#: includes/Core/Optimizer.php:300
+#, php-format
+msgid "Re-optimized attachment #%d."
+msgstr ""
+
+#: includes/Core/Optimizer.php:376
+msgid "File type is not supported for optimization."
+msgstr ""
+
+#: includes/Core/Optimizer.php:384
+msgid "Optimization failed. Check that the file is a valid image and is writeable."
+msgstr ""
+
+#: includes/Core/Optimizer.php:564
+msgid "No backup file found."
+msgstr ""
+
+#: includes/Core/Optimizer.php:568
+msgid "Could not restore the backup file."
+msgstr ""
+
+#: includes/Core/Optimizer.php:580
+msgid "Image restored to original."
+msgstr ""
+
+#: kitgenix-image-optimizer.php:408
+msgid "Sorry, you are not allowed to access this page."
+msgstr ""
+
+#: kitgenix-image-optimizer.php:428
+msgid "CAPTCHA for Cloudflare Turnstile"
+msgstr ""
+
+#: kitgenix-image-optimizer.php:432
+msgid "Add Cloudflare Turnstile CAPTCHA to WordPress, WooCommerce, Elementor, and popular form plugins."
+msgstr ""
+
+#: kitgenix-image-optimizer.php:436
+msgid "Custom Tabs for WooCommerce"
+msgstr ""
+
+#: kitgenix-image-optimizer.php:440
+msgid "Add custom WooCommerce product tabs with per-product content, global tabs, and lightweight controls."
+msgstr ""
+
+#: kitgenix-image-optimizer.php:444
+msgid "Document Manager"
+msgstr ""
+
+#: kitgenix-image-optimizer.php:448
+msgid "Manage document downloads with stable links, version history, and private file access."
+msgstr ""
+
+#: kitgenix-image-optimizer.php:452
+msgid "Order Tracking for WooCommerce"
+msgstr ""
+
+#: kitgenix-image-optimizer.php:456
+msgid "Add WooCommerce order tracking, multi-shipment support, email tracking links, and a public customer tracking page."
+msgstr ""
+
+#: kitgenix-image-optimizer.php:460
+msgid "PDF Invoicing for WooCommerce"
+msgstr ""
+
+#: kitgenix-image-optimizer.php:464
+msgid "Generate WooCommerce PDF invoices, receipts, packing slips, and credit notes with secure downloads and configurable email attachments."
+msgstr ""
+
+#: kitgenix-image-optimizer.php:468
+msgid "Affiliate Link Manager"
+msgstr ""
+
+#: kitgenix-image-optimizer.php:472
+msgid "Manage affiliate short links, branded redirects, and click tracking from one WordPress dashboard."
+msgstr ""
+
+#: kitgenix-image-optimizer.php:493
+msgid "Discover and manage every Kitgenix plugin from one screen."
+msgstr ""
+
+#: kitgenix-image-optimizer.php:494
+msgid "Install, activate, open, and review Kitgenix plugins."
+msgstr ""
+
+#. translators: %s is the number of active installs and may include a thousands separator, e.g. "1,234". The "+" suffix is literal.
+#: kitgenix-image-optimizer.php:533
+#, php-format
+msgid "%s+ installs"
+msgstr ""
+
+#. translators: %s is the average rating out of 5 with one decimal place, e.g. "4.5". The star symbol (★) precedes the number.
+#: kitgenix-image-optimizer.php:542
+#, php-format
+msgid "★ %s/5"
+msgstr ""
+
+#: kitgenix-image-optimizer.php:547
+msgid "Not installed"
+msgstr ""
+
+#: kitgenix-image-optimizer.php:549
+msgid "Active"
+msgstr ""
+
+#: kitgenix-image-optimizer.php:551
+msgid "Installed (Inactive)"
+msgstr ""
+
+#: kitgenix-image-optimizer.php:571
+msgid "Install"
+msgstr ""
+
+#: kitgenix-image-optimizer.php:578
+msgid "Activate"
+msgstr ""
+
+#: kitgenix-image-optimizer.php:580
+msgid "You do not have permission to activate plugins."
+msgstr ""
+
+#: kitgenix-image-optimizer.php:585
+msgid "Open"
+msgstr ""
+
+#: kitgenix-image-optimizer.php:594
+msgid "Review"
+msgstr ""
+
+#: kitgenix-image-optimizer.php:595
+msgid "Support Forum"
+msgstr ""

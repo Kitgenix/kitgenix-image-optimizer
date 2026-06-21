@@ -1,0 +1,569 @@
+/* ==========================================================================
+   Kitgenix Image Optimizer — Admin styles
+   ========================================================================== */
+
+/* ----------------------------------------------------------------
+   Page app wrapper & scoped tokens
+----------------------------------------------------------------- */
+#kitgenix-image-optimizer-admin-app {
+  width: 100%;
+  max-width: 1240px;
+  --kitgenix-image-optimizer-brand: var(--kitgenix-brand);
+  --kitgenix-image-optimizer-surface: var(--kitgenix-surface);
+  --kitgenix-image-optimizer-surface-alt: var(--kitgenix-surface-alt);
+  --kitgenix-image-optimizer-border-color: var(--kitgenix-border-color);
+  --kitgenix-image-optimizer-radius: var(--kitgenix-radius);
+  --kitgenix-image-optimizer-shadow: var(--kitgenix-shadow);
+}
+
+/* ----------------------------------------------------------------
+   Settings card
+----------------------------------------------------------------- */
+#kitgenix-image-optimizer-admin-app .kitgenix-image-optimizer-card {
+  background: var(--kitgenix-surface);
+  border: 1px solid var(--kitgenix-border-color);
+  border-radius: var(--kitgenix-radius);
+  box-shadow: var(--kitgenix-shadow);
+  padding: var(--kitgenix-pad-y) var(--kitgenix-pad-x);
+  margin-bottom: var(--kitgenix-gap);
+}
+
+#kitgenix-image-optimizer-admin-app .kitgenix-image-optimizer-card.kitgenix-support-page {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  margin-bottom: 0;
+}
+
+#kitgenix-image-optimizer-admin-app .kitgenix-image-optimizer-card > h3 {
+  margin: 0 0 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--kitgenix-heading);
+  letter-spacing: -0.01em;
+}
+
+/* ----------------------------------------------------------------
+   Bulk optimization area
+----------------------------------------------------------------- */
+#kitgenix-image-optimizer-bulk-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.kitgenix-image-optimizer-bulk-status {
+  font-size: 13px;
+  color: var(--kitgenix-text-muted);
+}
+
+.kitgenix-image-optimizer-bulk-status.is-running {
+  color: var(--kitgenix-brand);
+}
+
+.kitgenix-image-optimizer-bulk-status.is-done {
+  color: var(--kitgenix-success);
+}
+
+.kitgenix-image-optimizer-bulk-status.is-error {
+  color: var(--kitgenix-error);
+}
+
+/* ----------------------------------------------------------------
+   Images table — thumbnail cell
+----------------------------------------------------------------- */
+#kitgenix-image-optimizer-admin-app .widefat td:first-child {
+  width: 70px;
+  vertical-align: middle;
+}
+
+#kitgenix-image-optimizer-admin-app .widefat td:first-child img {
+  display: block;
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--kitgenix-radius-sm);
+  border: 1px solid var(--kitgenix-border-color);
+}
+
+/* ----------------------------------------------------------------
+   Status badges
+   (uses global .kitgenix-badge from kitgenix-admin-ui.css)
+----------------------------------------------------------------- */
+.kitgenix-image-optimizer-status-cell .kitgenix-badge {
+  font-size: 11px;
+}
+
+/* ----------------------------------------------------------------
+   WORDPRESS 7.0 COMPATIBILITY LAYER
+----------------------------------------------------------------- */
+#kitgenix-image-optimizer-admin-app .kitgenix-image-optimizer-card {
+  border-radius: var(--wp-components-border-radius, var(--kitgenix-radius));
+}
+
+.kitgenix-admin-app :is(.button.button-primary, button.button-primary, a.button.button-primary, input.button.button-primary) {
+  background: #4f2a9a;
+  border-color: #4f2a9a;
+  color: #ffffff;
+  text-shadow: none;
+}
+
+.kitgenix-admin-app :is(.button.button-primary, button.button-primary, a.button.button-primary, input.button.button-primary):hover,
+.kitgenix-admin-app :is(.button.button-primary, button.button-primary, a.button.button-primary, input.button.button-primary):focus-visible {
+  background: #42237f;
+  border-color: #42237f;
+  color: #ffffff;
+  text-shadow: none;
+}
+
+/* ----------------------------------------------------------------
+   KPI analytics stat grid
+----------------------------------------------------------------- */
+#kitgenix-image-optimizer-admin-app .kitgenix-image-optimizer-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--kitgenix-gap);
+  margin-bottom: var(--kitgenix-gap);
+}
+
+#kitgenix-image-optimizer-admin-app .kitgenix-analytics-card {
+  background: var(--kitgenix-surface);
+  border: 1px solid var(--kitgenix-border-color);
+  border-top: 3px solid var(--kitgenix-border-color-strong, #c3c4c7);
+  border-radius: var(--kitgenix-radius);
+  box-shadow: var(--kitgenix-shadow);
+  overflow: hidden;
+}
+
+#kitgenix-image-optimizer-admin-app .kitgenix-image-optimizer-savings-card.kitgenix-analytics-card {
+  border-top-color: var(--kitgenix-success, #1a7f4b);
+}
+
+#kitgenix-image-optimizer-admin-app .kitgenix-analytics-card__body {
+  padding: 16px 18px;
+}
+
+#kitgenix-image-optimizer-admin-app .kitgenix-analytics-card__title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--kitgenix-text-muted, #646970);
+  margin-bottom: 6px;
+}
+
+#kitgenix-image-optimizer-admin-app .kitgenix-analytics-card__value {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--kitgenix-heading, #1d2327);
+  margin-bottom: 4px;
+  letter-spacing: -0.02em;
+}
+
+#kitgenix-image-optimizer-admin-app .kitgenix-analytics-card__sub {
+  font-size: 11px;
+  color: var(--kitgenix-text-muted, #646970);
+  line-height: 1.4;
+}
+
+#kitgenix-image-optimizer-admin-app .kitgenix-image-optimizer-stat--pending {
+  color: var(--kitgenix-warning, #e6a817);
+}
+
+#kitgenix-image-optimizer-admin-app .kitgenix-image-optimizer-stat--savings {
+  color: var(--kitgenix-success, #1a7f4b);
+}
+
+/* ----------------------------------------------------------------
+   Progress bar
+----------------------------------------------------------------- */
+.kitgenix-image-optimizer-progress-wrap {
+  margin: 16px 0 8px;
+}
+
+.kitgenix-image-optimizer-progress-track {
+  height: 8px;
+  border-radius: 100px;
+  background: var(--kitgenix-surface-alt, #f0f0f0);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.kitgenix-image-optimizer-progress-fill {
+  height: 100%;
+  border-radius: 100px;
+  background: var(--kitgenix-brand-gradient, var(--kitgenix-brand, #0073aa));
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 2px;
+}
+
+.kitgenix-image-optimizer-progress-label {
+  display: block;
+  font-size: 12px;
+  color: var(--kitgenix-text-muted, #646970);
+  margin-top: 4px;
+}
+
+/* ----------------------------------------------------------------
+   Images table column widths & typography
+----------------------------------------------------------------- */
+.kitgenix-image-optimizer-table-wrap {
+  overflow-x: auto;
+}
+
+.kitgenix-image-optimizer-images-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.kitgenix-image-optimizer-images-table thead th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--kitgenix-text-muted, #646970);
+  font-weight: 700;
+  padding: 8px 10px;
+}
+
+.kitgenix-image-optimizer-images-table th.col-thumb,
+.kitgenix-image-optimizer-images-table td.col-thumb {
+  width: 72px;
+  vertical-align: middle;
+}
+
+.kitgenix-image-optimizer-images-table td.col-thumb img {
+  display: block;
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--kitgenix-radius-sm);
+  border: 1px solid var(--kitgenix-border-color);
+}
+
+.kitgenix-image-optimizer-images-table th.col-original,
+.kitgenix-image-optimizer-images-table td.col-original,
+.kitgenix-image-optimizer-images-table th.col-savings,
+.kitgenix-image-optimizer-images-table td.col-savings {
+  width: 130px;
+}
+
+.kitgenix-image-optimizer-images-table th.col-status,
+.kitgenix-image-optimizer-images-table td.col-status {
+  width: 100px;
+}
+
+.kitgenix-image-optimizer-images-table th.col-actions,
+.kitgenix-image-optimizer-images-table td.col-actions {
+  width: 90px;
+}
+
+.kitgenix-image-optimizer-filename {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--kitgenix-heading, #1d2327);
+  word-break: break-all;
+}
+
+.kitgenix-image-optimizer-mime {
+  font-size: 11px;
+  color: var(--kitgenix-text-muted, #646970);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ----------------------------------------------------------------
+   Savings chip
+----------------------------------------------------------------- */
+.kitgenix-image-optimizer-savings-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--kitgenix-success-bg, #ecf7f1);
+  color: var(--kitgenix-success, #1a7f4b);
+  border: 1px solid var(--kitgenix-success-border, #a8e6c0);
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.kitgenix-image-optimizer-savings-chip.is-none {
+  background: transparent;
+  border-color: transparent;
+  color: var(--kitgenix-text-muted, #646970);
+  font-weight: 400;
+}
+
+/* ----------------------------------------------------------------
+   Support tab — link list
+----------------------------------------------------------------- */
+.kitgenix-support-link-list {
+  list-style: disc;
+  margin: 0 0 0 1.4em;
+  padding: 0;
+  font-size: 13px;
+  line-height: 2;
+}
+
+.kitgenix-support-link-list li a {
+  text-decoration: none;
+}
+
+.kitgenix-support-link-list li a:hover {
+  text-decoration: underline;
+}
+
+/* ----------------------------------------------------------------
+   Checkbox option rows (replaces kitgenix-switch toggles)
+----------------------------------------------------------------- */
+.kitgenix-option-label {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.kitgenix-option-label input[type="checkbox"] {
+  flex-shrink: 0;
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--kitgenix-brand, #0073aa);
+  cursor: pointer;
+}
+
+/* ----------------------------------------------------------------
+   Visual compression level card grid
+----------------------------------------------------------------- */
+.kitgenix-compression-card-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+
+@media (max-width: 1000px) {
+  .kitgenix-compression-card-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 680px) {
+  .kitgenix-compression-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.kitgenix-compression-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border: 2px solid var(--kitgenix-border-color, #c3c4c7);
+  border-radius: var(--kitgenix-radius, 4px);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  background: var(--kitgenix-surface, #fff);
+  position: relative;
+  user-select: none;
+}
+
+.kitgenix-compression-card:hover {
+  border-color: var(--kitgenix-brand, #0073aa);
+}
+
+.kitgenix-compression-card:has(input:checked),
+.kitgenix-compression-card.is-selected {
+  border-color: var(--kitgenix-brand, #0073aa);
+  background: rgba(0, 115, 170, 0.05);
+}
+
+.kitgenix-compression-card input[type="radio"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.kitgenix-compression-card__name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--kitgenix-heading, #1d2327);
+}
+
+.kitgenix-compression-card__quality {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--kitgenix-brand, #0073aa);
+  font-family: monospace;
+}
+
+.kitgenix-compression-card__desc {
+  font-size: 11px;
+  color: var(--kitgenix-text-muted, #646970);
+  line-height: 1.3;
+}
+
+/* ----------------------------------------------------------------
+   Activity log table
+----------------------------------------------------------------- */
+.kitgenix-image-optimizer-log-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.kitgenix-image-optimizer-log-table thead th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--kitgenix-text-muted, #646970);
+  font-weight: 700;
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+
+.kitgenix-image-optimizer-log-table td {
+  padding: 8px 10px;
+  vertical-align: top;
+}
+
+.kitgenix-image-optimizer-log-table .kitgenix-log-time {
+  width: 170px;
+  font-size: 12px;
+  color: var(--kitgenix-text-muted, #646970);
+  white-space: nowrap;
+}
+
+.kitgenix-image-optimizer-log-table .kitgenix-log-context code {
+  font-size: 11px;
+  background: var(--kitgenix-surface-alt, #f6f7f7);
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: var(--kitgenix-text-color, #1d2327);
+  white-space: nowrap;
+}
+
+.kitgenix-image-optimizer-log-table .kitgenix-log-outcome {
+  width: 100px;
+}
+
+.kitgenix-image-optimizer-log-table .kitgenix-log-note {
+  font-size: 12px;
+  color: var(--kitgenix-text-muted, #646970);
+  line-height: 1.5;
+}
+
+/* ----------------------------------------------------------------
+   Attachment panel stats table
+----------------------------------------------------------------- */
+.kitgenix-attachment-panel-stats {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 4px;
+  font-size: 12px;
+}
+
+.kitgenix-attachment-panel-stats th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--kitgenix-text-muted, #646970);
+  padding: 3px 8px 3px 0;
+  width: 70px;
+}
+
+.kitgenix-attachment-panel-stats td {
+  padding: 3px 0;
+  color: var(--kitgenix-text-color, #1d2327);
+}
+
+/* ----------------------------------------------------------------
+   Media library stats bar (upload.php)
+----------------------------------------------------------------- */
+.kitgenix-media-library-bar {
+  background: var(--kitgenix-surface, #fff);
+  border: 1px solid var(--kitgenix-border-color, #c3c4c7);
+  border-radius: var(--kitgenix-radius, 4px);
+  margin: 40px 20px 8px 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+  clear: both;
+}
+
+.kitgenix-media-library-bar__inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  flex-wrap: wrap;
+}
+
+.kitgenix-media-library-bar__brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--kitgenix-heading, #1d2327);
+  flex-shrink: 0;
+  border-right: 1px solid var(--kitgenix-border-color, #c3c4c7);
+  padding-right: 16px;
+}
+
+.kitgenix-media-library-bar__stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.kitgenix-media-library-bar__stat {
+  font-size: 12px;
+  color: var(--kitgenix-text-muted, #646970);
+}
+
+.kitgenix-media-library-bar__stat strong {
+  color: var(--kitgenix-heading, #1d2327);
+  font-weight: 700;
+}
+
+.kitgenix-media-library-bar__stat--optimized strong {
+  color: var(--kitgenix-success, #1a7f4b);
+}
+
+.kitgenix-media-library-bar__stat--savings strong {
+  color: var(--kitgenix-brand, #0073aa);
+}
+
+.kitgenix-media-library-bar__pct {
+  color: var(--kitgenix-text-muted, #646970);
+  font-weight: 400;
+}
+
+.kitgenix-media-library-bar__sep {
+  color: var(--kitgenix-border-color-strong, #c3c4c7);
+  font-size: 11px;
+  font-weight: 300;
+}
+
+.kitgenix-media-library-bar__cta {
+  flex-shrink: 0;
+}
+
+/* ----------------------------------------------------------------
+   Support tab — action buttons
+----------------------------------------------------------------- */
+.kitgenix-support-doc-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
