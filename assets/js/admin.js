@@ -29,29 +29,26 @@
     return (parseInt(n, 10) || 0).toLocaleString();
   }
 
-  // -------------------------------------------------------------------------
-  // State
-  // -------------------------------------------------------------------------
-  var isBulkRunning = false;
-  var bulkStopped   = false;
-  var bulkTotal     = 0;
-  var bulkOptimized = 0;
-  var bulkSaved     = 0; // bytes accumulated this session
-
-  var isReoptRunning = false;
-  var reoptStopped   = false;
-  var reoptOffset    = 0;
-  var reoptProcessed = 0;
-  var reoptSaved     = 0;
+  function post(action, extra) {
+    var c = cfg();
+    var data = new FormData();
+    data.append('action', action);
+    data.append('nonce', String(c.nonce || ''));
+    if (extra) {
+      Object.keys(extra).forEach(function (key) {
+        data.append(key, String(extra[key]));
+      });
+    }
+    return fetch(String(c.ajax_url || ''), { method: 'POST', body: data }).then(function (res) {
+      return res.json();
+    });
+  }
 
   // -------------------------------------------------------------------------
   // KPI card updaters
   // -------------------------------------------------------------------------
-  function updateKpiCards(newOptimized, savedBytes) {
-    var c = cfg();
-    var total     = parseInt(c.total, 10) || 0;
-    var optimized = Math.min(newOptimized, total);
-    var pending   = Math.max(0, total - optimized);
+  function updateKpiCards(newOptimized, total, savedBytes) {
+    var pending = Math.max(0, total - newOptimized);
 
     var elTotal    = document.getElementById('kitgenix-image-optimizer-stat-total');
     var elOptimized = document.getElementById('kitgenix-image-optimizer-stat-optimized');
@@ -59,7 +56,7 @@
     var elSavings  = document.getElementById('kitgenix-image-optimizer-stat-savings');
 
     if (elTotal)    elTotal.textContent    = formatNumber(total);
-    if (elOptimized) elOptimized.textContent = formatNumber(optimized);
+    if (elOptimized) elOptimized.textContent = formatNumber(newOptimized);
     if (elPending)  elPending.textContent  = formatNumber(pending);
     if (elSavings)  elSavings.textContent  = formatBytes(savedBytes);
   }
@@ -72,78 +69,71 @@
     var pct = total > 0 ? Math.min(100, Math.round((current / total) * 100)) : 0;
 
     if (fill)  fill.style.width = pct + '%';
-    if (label) label.textContent = formatNumber(current) + ' ' + i18n('of', 'of') + ' ' + formatNumber(total) + ' ' + i18n('images', 'images') + ' — ' + pct + '%';
+    if (label) label.textContent = formatNumber(current) + ' ' + i18n('of', 'of') + ' ' + formatNumber(total) + ' ' + i18n('images', 'images') + ' – ' + pct + '%';
+  }
+
+  function updateRetryButton(failedCount) {
+    var retryBtn = document.getElementById('kitgenix-image-optimizer-bulk-retry');
+    if (!retryBtn) return;
+    var count = parseInt(failedCount, 10) || 0;
+    if (count > 0) {
+      retryBtn.style.display = '';
+      retryBtn.textContent = i18n('retryFailed', 'Retry %d Failed').replace('%d', formatNumber(count));
+    } else {
+      retryBtn.style.display = 'none';
+    }
   }
 
   // -------------------------------------------------------------------------
-  // Bulk optimization
+  // Bulk queue (server-persisted; survives a closed browser tab via a
+  // scheduled background task, and pause/resume/retry are real queue states,
+  // not just a client-side flag).
   // -------------------------------------------------------------------------
+  var pollTimer = null;
+  var isPolling = false;
+
   function initBulk() {
     var startBtn   = document.getElementById('kitgenix-image-optimizer-bulk-start');
     var reoptBtn   = document.getElementById('kitgenix-image-optimizer-bulk-reoptimize');
+    var retryBtn   = document.getElementById('kitgenix-image-optimizer-bulk-retry');
     var statusSpan = document.getElementById('kitgenix-image-optimizer-bulk-status');
 
     if (!startBtn) return;
 
-    // Seed session counters from server-side data.
     var c = cfg();
-    bulkTotal     = parseInt(c.total, 10) || 0;
-    bulkOptimized = parseInt(c.optimized, 10) || 0;
-    bulkSaved     = parseInt(c.savings_bytes, 10) || 0;
+    var queue = c.queue || {};
 
-    startBtn.addEventListener('click', function () {
-      if (isBulkRunning) {
-        bulkStopped  = true;
-        isBulkRunning = false;
-        startBtn.textContent = i18n('bulkStart', 'Start Bulk Optimization');
-        if (reoptBtn) reoptBtn.removeAttribute('disabled');
-        if (statusSpan) {
-          statusSpan.className = 'kitgenix-image-optimizer-bulk-status';
-          statusSpan.textContent = '';
+    function setRunningUI(mode) {
+      startBtn.textContent = i18n('bulkPause', 'Pause');
+      startBtn.dataset.mode = 'bulk';
+      if (reoptBtn) {
+        if (mode === 'reoptimize') {
+          reoptBtn.textContent = i18n('bulkPause', 'Pause');
+          reoptBtn.dataset.mode = 'reoptimize';
+        } else {
+          reoptBtn.setAttribute('disabled', 'disabled');
         }
-        return;
       }
+    }
 
-      // Don't start if re-optimize is already running.
-      if (isReoptRunning) return;
-
-      bulkStopped  = false;
-      isBulkRunning = true;
-      startBtn.textContent = i18n('bulkStop', 'Stop');
-      if (reoptBtn) reoptBtn.setAttribute('disabled', 'disabled');
-
-      if (statusSpan) {
-        statusSpan.className = 'kitgenix-image-optimizer-bulk-status is-running';
-        statusSpan.textContent = i18n('optimizing', 'Optimizing…');
+    function setIdleUI() {
+      startBtn.textContent = i18n('bulkStart', 'Start Bulk Optimization');
+      delete startBtn.dataset.mode;
+      if (reoptBtn) {
+        reoptBtn.removeAttribute('disabled');
+        reoptBtn.textContent = i18n('bulkReoptimizeStart', 'Bulk Re-Optimize');
+        delete reoptBtn.dataset.mode;
       }
+    }
 
-      processNext();
-    });
-  }
+    function poll() {
+      if (isPolling) return;
+      isPolling = true;
 
-  function processNext() {
-    if (!isBulkRunning || bulkStopped) return;
-
-    var c = cfg();
-    if (!c.ajax_url || !c.nonce) return;
-
-    var data = new FormData();
-    data.append('action', 'kitgenix_image_optimizer_bulk_next');
-    data.append('nonce', String(c.nonce));
-
-    fetch(String(c.ajax_url), { method: 'POST', body: data })
-      .then(function (res) { return res.json(); })
-      .then(function (json) {
-        if (!isBulkRunning || bulkStopped) return;
-
-        var startBtn   = document.getElementById('kitgenix-image-optimizer-bulk-start');
-        var statusSpan = document.getElementById('kitgenix-image-optimizer-bulk-status');
-
+      post('kitgenix_image_optimizer_queue_next', {}).then(function (json) {
+        isPolling = false;
         if (!json.success) {
-          isBulkRunning = false;
-          if (startBtn) startBtn.textContent = i18n('bulkStart', 'Start Bulk Optimization');
-          var _rb1 = document.getElementById('kitgenix-image-optimizer-bulk-reoptimize');
-          if (_rb1) _rb1.removeAttribute('disabled');
+          stopPolling();
           if (statusSpan) {
             statusSpan.className = 'kitgenix-image-optimizer-bulk-status is-error';
             statusSpan.textContent = (json.data && json.data.message) ? String(json.data.message) : i18n('error', 'An error occurred. Please try again.');
@@ -151,16 +141,19 @@
           return;
         }
 
-        if (json.data && json.data.done) {
-          isBulkRunning = false;
-          var _rb2 = document.getElementById('kitgenix-image-optimizer-bulk-reoptimize');
-          if (_rb2) _rb2.removeAttribute('disabled');
-          if (startBtn) {
-            startBtn.textContent = i18n('allOptimized', 'All Images Optimized');
-            startBtn.setAttribute('disabled', 'disabled');
-          }
-          updateProgressBar(bulkTotal, bulkTotal);
-          updateKpiCards(bulkTotal, bulkSaved);
+        var data = json.data || {};
+
+        if (data.status === 'paused') {
+          stopPolling();
+          return;
+        }
+
+        if (data.done || data.status === 'completed' || data.idle) {
+          stopPolling();
+          setIdleUI();
+          updateProgressBar(data.total || 0, data.total || 0);
+          updateKpiCards(data.total || 0, data.total || 0, data.savings_bytes || 0);
+          updateRetryButton(data.failed_count || 0);
           if (statusSpan) {
             statusSpan.className = 'kitgenix-image-optimizer-bulk-status is-done';
             statusSpan.textContent = i18n('done', 'All done! Every image has been optimized.');
@@ -168,174 +161,138 @@
           return;
         }
 
-        // Accumulate savings from this image.
-        var imgSavings = parseInt((json.data && json.data.savings_bytes) || 0, 10);
-        bulkSaved     += imgSavings;
-        bulkOptimized += 1;
-
-        // Update row in table.
-        if (json.data && json.data.attachment_id) {
-          updateRowStatus(
-            parseInt(json.data.attachment_id, 10),
-            json.data.savings_bytes || 0,
-            json.data.savings_percent || 0
-          );
+        if (data.attachment_id) {
+          updateRowStatus(parseInt(data.attachment_id, 10), data.savings_bytes || 0, data.savings_percent || 0);
         }
 
-        updateKpiCards(bulkOptimized, bulkSaved);
-        updateProgressBar(bulkOptimized, bulkTotal);
+        var total = parseInt(data.total, 10) || 0;
+        var done  = parseInt(data.done_estimate, 10) || parseInt(data.processed, 10) || 0;
 
-        // Live status text.
+        updateProgressBar(done, total);
+        updateKpiCards(parseInt(cfg().optimized, 10) + (data.mode === 'bulk' ? done : 0) || done, total, data.savings_bytes || 0);
+        updateRetryButton(data.failed_count || 0);
+
         if (statusSpan) {
-          var pct = bulkTotal > 0 ? Math.round((bulkOptimized / bulkTotal) * 100) : 0;
-          statusSpan.textContent = formatNumber(bulkOptimized) + ' / ' + formatNumber(bulkTotal) + ' (' + pct + '%) — ' + formatBytes(bulkSaved) + ' ' + i18n('saved', 'saved');
+          statusSpan.className = 'kitgenix-image-optimizer-bulk-status is-running';
+          var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+          statusSpan.textContent = formatNumber(done) + ' / ' + formatNumber(total) + ' (' + pct + '%) – ' + formatBytes(data.savings_bytes || 0) + ' ' + i18n('saved', 'saved');
         }
 
-        // Continue to next image.
-        processNext();
-      })
-      .catch(function () {
-        isBulkRunning = false;
-        var startBtn   = document.getElementById('kitgenix-image-optimizer-bulk-start');
-        var reoptBtn   = document.getElementById('kitgenix-image-optimizer-bulk-reoptimize');
-        var statusSpan = document.getElementById('kitgenix-image-optimizer-bulk-status');
-        if (startBtn) startBtn.textContent = i18n('bulkStart', 'Start Bulk Optimization');
-        if (reoptBtn) reoptBtn.removeAttribute('disabled');
+        // Keep going while the queue reports "running".
+        if (data.status === 'running') {
+          pollTimer = window.setTimeout(poll, 150);
+        } else {
+          stopPolling();
+        }
+      }).catch(function () {
+        isPolling = false;
+        stopPolling();
         if (statusSpan) {
           statusSpan.className = 'kitgenix-image-optimizer-bulk-status is-error';
           statusSpan.textContent = i18n('error', 'An error occurred. Please try again.');
         }
       });
+    }
+
+    function stopPolling() {
+      if (pollTimer) {
+        window.clearTimeout(pollTimer);
+        pollTimer = null;
+      }
+    }
+
+    function startQueue(mode) {
+      post('kitgenix_image_optimizer_queue_start', { mode: mode }).then(function (json) {
+        if (!json.success) return;
+        setRunningUI(mode);
+        if (statusSpan) {
+          statusSpan.className = 'kitgenix-image-optimizer-bulk-status is-running';
+          statusSpan.textContent = i18n('optimizing', 'Optimizing…');
+        }
+        poll();
+      });
+    }
+
+    function pauseQueue() {
+      post('kitgenix_image_optimizer_queue_pause', {}).then(function () {
+        stopPolling();
+        setIdleUI();
+        startBtn.textContent = i18n('bulkStart', 'Start Bulk Optimization');
+        if (statusSpan) {
+          statusSpan.className = 'kitgenix-image-optimizer-bulk-status';
+          statusSpan.textContent = i18n('bulkPause', 'Paused');
+        }
+      });
+    }
+
+    startBtn.addEventListener('click', function () {
+      if (startBtn.dataset.mode === 'bulk') {
+        pauseQueue();
+        return;
+      }
+      if (reoptBtn && reoptBtn.dataset.mode === 'reoptimize') return; // reoptimize running
+      startQueue('bulk');
+    });
+
+    if (reoptBtn) {
+      reoptBtn.addEventListener('click', function () {
+        if (reoptBtn.dataset.mode === 'reoptimize') {
+          pauseQueue();
+          return;
+        }
+        if (startBtn.dataset.mode === 'bulk') return; // bulk running
+        startQueue('reoptimize');
+      });
+    }
+
+    if (retryBtn) {
+      retryBtn.addEventListener('click', function () {
+        retryBtn.textContent = i18n('retrying', 'Retrying…');
+        post('kitgenix_image_optimizer_queue_retry', {}).then(function (json) {
+          if (!json.success) return;
+          setRunningUI('bulk');
+          poll();
+        });
+      });
+    }
+
+    // Resume automatically if the queue was left running/paused server-side
+    // (e.g. this page was reloaded mid-run, or the background task is active).
+    if (queue.status === 'running') {
+      setRunningUI(queue.mode || 'bulk');
+      poll();
+    }
+    updateRetryButton(queue.failed_count || 0);
   }
 
   // -------------------------------------------------------------------------
-  // Bulk Re-Optimize (re-processes ALL images, including already-optimised ones)
+  // Recalculate stats (explicit, admin-triggered full recount)
   // -------------------------------------------------------------------------
-  function initBulkReoptimize() {
-    var btn        = document.getElementById('kitgenix-image-optimizer-bulk-reoptimize');
-    var startBtn   = document.getElementById('kitgenix-image-optimizer-bulk-start');
-    var statusSpan = document.getElementById('kitgenix-image-optimizer-bulk-status');
-
+  function initRecalculate() {
+    var btn = document.getElementById('kitgenix-image-optimizer-recalculate-stats');
     if (!btn) return;
 
     btn.addEventListener('click', function () {
-      if (isReoptRunning) {
-        // Stop re-optimize.
-        reoptStopped   = true;
-        isReoptRunning = false;
-        btn.textContent = i18n('bulkReoptimizeStart', 'Bulk Re-Optimize');
-        if (startBtn) startBtn.removeAttribute('disabled');
-        if (statusSpan) {
-          statusSpan.className   = 'kitgenix-image-optimizer-bulk-status';
-          statusSpan.textContent = '';
+      var original = btn.textContent;
+      btn.setAttribute('disabled', 'disabled');
+      btn.textContent = i18n('recalculating', 'Recalculating…');
+
+      post('kitgenix_image_optimizer_recalculate_stats', {}).then(function (json) {
+        btn.removeAttribute('disabled');
+        btn.textContent = i18n('recalculated', 'Stats recalculated.');
+        if (json.success && json.data) {
+          updateKpiCards(json.data.optimized || 0, parseInt(cfg().total, 10) || 0, json.data.savings_bytes || 0);
         }
-        return;
-      }
-
-      // Don't start if normal bulk is already running.
-      if (isBulkRunning) return;
-
-      reoptStopped   = false;
-      isReoptRunning = true;
-      reoptOffset    = 0;
-      reoptProcessed = 0;
-      reoptSaved     = 0;
-      btn.textContent = i18n('bulkStop', 'Stop');
-      if (startBtn) startBtn.setAttribute('disabled', 'disabled');
-
-      if (statusSpan) {
-        statusSpan.className   = 'kitgenix-image-optimizer-bulk-status is-running';
-        statusSpan.textContent = i18n('optimizing', 'Optimizing…');
-      }
-
-      processReoptimizeNext();
+        window.setTimeout(function () { btn.textContent = original; }, 2500);
+      }).catch(function () {
+        btn.removeAttribute('disabled');
+        btn.textContent = original;
+      });
     });
   }
 
-  function processReoptimizeNext() {
-    if (!isReoptRunning || reoptStopped) return;
-
-    var c = cfg();
-    if (!c.ajax_url || !c.nonce) return;
-
-    var total = parseInt(c.total, 10) || 0;
-
-    var data = new FormData();
-    data.append('action', 'kitgenix_image_optimizer_bulk_reoptimize_next');
-    data.append('nonce', String(c.nonce));
-    data.append('offset', String(reoptOffset));
-
-    fetch(String(c.ajax_url), { method: 'POST', body: data })
-      .then(function (res) { return res.json(); })
-      .then(function (json) {
-        if (!isReoptRunning || reoptStopped) return;
-
-        var btn        = document.getElementById('kitgenix-image-optimizer-bulk-reoptimize');
-        var startBtn   = document.getElementById('kitgenix-image-optimizer-bulk-start');
-        var statusSpan = document.getElementById('kitgenix-image-optimizer-bulk-status');
-
-        if (!json.success) {
-          isReoptRunning = false;
-          if (btn)      btn.textContent = i18n('bulkReoptimizeStart', 'Bulk Re-Optimize');
-          if (startBtn) startBtn.removeAttribute('disabled');
-          if (statusSpan) {
-            statusSpan.className   = 'kitgenix-image-optimizer-bulk-status is-error';
-            statusSpan.textContent = (json.data && json.data.message) ? String(json.data.message) : i18n('error', 'An error occurred. Please try again.');
-          }
-          return;
-        }
-
-        if (json.data && json.data.done) {
-          isReoptRunning = false;
-          if (btn)      btn.textContent = i18n('bulkReoptimizeStart', 'Bulk Re-Optimize');
-          if (startBtn) startBtn.removeAttribute('disabled');
-          updateProgressBar(total, total);
-          updateKpiCards(total, reoptSaved);
-          if (statusSpan) {
-            statusSpan.className   = 'kitgenix-image-optimizer-bulk-status is-done';
-            statusSpan.textContent = i18n('reoptimizeDone', 'All images have been re-optimized.');
-          }
-          return;
-        }
-
-        var imgSavings  = parseInt((json.data && json.data.savings_bytes) || 0, 10);
-        reoptSaved     += imgSavings;
-        reoptOffset     = parseInt((json.data && json.data.next_offset) || (reoptOffset + 1), 10);
-        reoptProcessed += 1;
-
-        if (json.data && json.data.attachment_id) {
-          updateRowStatus(
-            parseInt(json.data.attachment_id, 10),
-            json.data.savings_bytes || 0,
-            json.data.savings_percent || 0
-          );
-        }
-
-        updateProgressBar(reoptProcessed, total);
-
-        if (statusSpan) {
-          var pct = total > 0 ? Math.round((reoptProcessed / total) * 100) : 0;
-          statusSpan.textContent = formatNumber(reoptProcessed) + ' / ' + formatNumber(total) + ' (' + pct + '%) — ' + formatBytes(reoptSaved) + ' ' + i18n('saved', 'saved');
-        }
-
-        processReoptimizeNext();
-      })
-      .catch(function () {
-        isReoptRunning = false;
-        var btn        = document.getElementById('kitgenix-image-optimizer-bulk-reoptimize');
-        var startBtn   = document.getElementById('kitgenix-image-optimizer-bulk-start');
-        var statusSpan = document.getElementById('kitgenix-image-optimizer-bulk-status');
-        if (btn)      btn.textContent = i18n('bulkReoptimizeStart', 'Bulk Re-Optimize');
-        if (startBtn) startBtn.removeAttribute('disabled');
-        if (statusSpan) {
-          statusSpan.className   = 'kitgenix-image-optimizer-bulk-status is-error';
-          statusSpan.textContent = i18n('error', 'An error occurred. Please try again.');
-        }
-      });
-  }
-
   // -------------------------------------------------------------------------
-  // Single image optimization buttons
+  // Single image optimization / restore buttons (Images tab table)
   // -------------------------------------------------------------------------
   function initSingleOptimize() {
     document.addEventListener('click', function (e) {
@@ -345,39 +302,49 @@
       var attachmentId = parseInt(btn.getAttribute('data-attachment-id') || '0', 10);
       if (!attachmentId) return;
 
-      var c = cfg();
-      if (!c.ajax_url || !c.nonce) return;
-
       btn.setAttribute('disabled', 'disabled');
       btn.textContent = i18n('optimizing', 'Optimizing…');
 
-      var data = new FormData();
-      data.append('action', 'kitgenix_image_optimizer_optimize_single');
-      data.append('nonce', String(c.nonce));
-      data.append('attachment_id', String(attachmentId));
-
-      fetch(String(c.ajax_url), { method: 'POST', body: data })
-        .then(function (res) { return res.json(); })
-        .then(function (json) {
-          if (json.success) {
-            var imgSavings = parseInt((json.data && json.data.savings_bytes) || 0, 10);
-            var imgPct     = parseFloat((json.data && json.data.savings_percent) || 0);
-            bulkSaved     += imgSavings;
-            bulkOptimized += 1;
-
-            updateRowStatus(attachmentId, imgSavings, imgPct);
-            updateKpiCards(bulkOptimized, bulkSaved);
-            updateProgressBar(bulkOptimized, bulkTotal);
-            btn.textContent = i18n('optimized', 'Optimized');
-          } else {
-            btn.removeAttribute('disabled');
-            btn.textContent = 'Optimize';
-          }
-        })
-        .catch(function () {
+      post('kitgenix_image_optimizer_optimize_single', { attachment_id: attachmentId }).then(function (json) {
+        if (json.success) {
+          var imgSavings = parseInt((json.data && json.data.savings_bytes) || 0, 10);
+          var imgPct     = parseFloat((json.data && json.data.savings_percent) || 0);
+          updateRowStatus(attachmentId, imgSavings, imgPct);
+          btn.textContent = i18n('optimized', 'Optimized');
+          btn.removeAttribute('disabled');
+        } else {
           btn.removeAttribute('disabled');
           btn.textContent = 'Optimize';
-        });
+        }
+      }).catch(function () {
+        btn.removeAttribute('disabled');
+        btn.textContent = 'Optimize';
+      });
+    });
+
+    document.addEventListener('click', function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest('.kitgenix-image-optimizer-restore-backup') : null;
+      if (!btn) return;
+
+      if (!window.confirm(i18n('restoreConfirm', 'Restore original image? This will undo the optimization.'))) return;
+
+      var attachmentId = parseInt(btn.getAttribute('data-attachment-id') || '0', 10);
+      if (!attachmentId) return;
+
+      btn.setAttribute('disabled', 'disabled');
+      btn.textContent = i18n('restoring', 'Restoring…');
+
+      post('kitgenix_image_optimizer_restore_backup', { attachment_id: attachmentId }).then(function (json) {
+        if (json.success) {
+          window.location.reload();
+        } else {
+          btn.removeAttribute('disabled');
+          btn.textContent = i18n('restoreFail', 'Restore failed');
+        }
+      }).catch(function () {
+        btn.removeAttribute('disabled');
+        btn.textContent = i18n('restoreFail', 'Restore failed');
+      });
     });
   }
 
@@ -392,7 +359,7 @@
     var savingsCell = row.querySelector('.kitgenix-image-optimizer-savings-cell');
 
     if (statusCell) {
-      statusCell.innerHTML = '<span class="kitgenix-badge ok">' + i18n('optimized', 'Optimized') + '</span>';
+      statusCell.innerHTML = '<span class="kitgenix-badge success">' + i18n('optimized', 'Optimized') + '</span>';
     }
 
     if (savingsCell) {
@@ -409,16 +376,16 @@
   // -------------------------------------------------------------------------
   // Init
   // -------------------------------------------------------------------------
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () {
-      initBulk();
-      initSingleOptimize();
-      initBulkReoptimize();
-    });
-  } else {
+  function initAll() {
     initBulk();
     initSingleOptimize();
-    initBulkReoptimize();
+    initRecalculate();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
   }
 
 }());

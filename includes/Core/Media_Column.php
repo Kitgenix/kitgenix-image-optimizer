@@ -38,7 +38,7 @@ final class Media_Column {
 
 		$mime = (string) get_post_mime_type( $attachment_id );
 		if ( ! in_array( $mime, [ 'image/jpeg', 'image/png', 'image/webp', 'image/gif' ], true ) ) {
-			echo '<span class="kitgenix-mcol-na">' . esc_html__( '—', 'kitgenix-image-optimizer' ) . '</span>';
+			echo '<span class="kitgenix-mcol-na">' . esc_html__( '–', 'kitgenix-image-optimizer' ) . '</span>';
 			return;
 		}
 
@@ -73,7 +73,7 @@ final class Media_Column {
 			return;
 		}
 
-		// Optimized — show savings.
+		// Optimized – show savings.
 		if ( $savings > 0 ) {
 			printf(
 				'<span class="kitgenix-mcol-optimized">%s · %s</span>',
@@ -86,7 +86,7 @@ final class Media_Column {
 
 		// Restore link only when backup file exists.
 		$file   = (string) get_attached_file( $attachment_id );
-		$backup = $file ? (string) preg_replace( '/(\.[^.]+)$/', '-kitgenix-original$1', $file ) : '';
+		$backup = $file ? Optimizer::backup_path_for( $file ) : '';
 
 		if ( $backup && file_exists( $backup ) ) {
 			printf(
@@ -202,7 +202,7 @@ final class Media_Column {
 		$base_dir    = defined( 'KITGENIX_IMAGE_OPTIMIZER_DIR' ) ? (string) KITGENIX_IMAGE_OPTIMIZER_DIR : '';
 
 		// Enqueue shared UI CSS so design tokens are available.
-		wp_enqueue_style( 'kitgenix-admin-ui' );
+		wp_enqueue_style( 'kitgenix-image-optimizer-admin-ui' );
 
 		// Enqueue plugin admin CSS (contains .kitgenix-media-library-bar styles).
 		// May already be registered if Settings_UI ran first; register if not.
@@ -212,7 +212,7 @@ final class Media_Column {
 			wp_register_style(
 				'kitgenix-image-optimizer-admin',
 				plugins_url( 'assets/css/admin.css', $plugin_file ),
-				[ 'kitgenix-admin-ui' ],
+				[ 'kitgenix-image-optimizer-admin-ui' ],
 				$ver
 			);
 		}
@@ -344,7 +344,7 @@ final class Media_Column {
 		$pct       = $total > 0 ? (int) round( ( $optimized / $total ) * 100 ) : 0;
 
 		$plugin_file = defined( 'KITGENIX_IMAGE_OPTIMIZER_FILE' ) ? (string) KITGENIX_IMAGE_OPTIMIZER_FILE : '';
-		$logo        = $plugin_file ? plugins_url( 'assets/images/logos/kitgenix-favicon-purple.svg', $plugin_file ) : '';
+		$logo        = $plugin_file ? plugins_url( 'assets/images/logos/kitgenix-primary-favicon.svg', $plugin_file ) : '';
 		$bulk_url    = admin_url( 'admin.php?page=kitgenix-image-optimizer&tab=images' );
 
 		echo '<div class="kitgenix-media-library-bar">';

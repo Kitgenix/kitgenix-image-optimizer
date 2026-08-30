@@ -14,8 +14,10 @@ use KitgenixImageOptimizer\Admin\Settings_UI;
 use KitgenixImageOptimizer\Core\CLI;
 use KitgenixImageOptimizer\Core\Lazy_Load;
 use KitgenixImageOptimizer\Core\Media_Column;
+use KitgenixImageOptimizer\Core\Migrations;
 use KitgenixImageOptimizer\Core\Optimizer;
 use KitgenixImageOptimizer\Core\Settings;
+use KitgenixImageOptimizer\Core\Site_Health;
 use KitgenixImageOptimizer\Core\Webp_Delivery;
 
 final class Plugin {
@@ -26,6 +28,9 @@ final class Plugin {
 		// Register settings.
 		\add_action( 'admin_init', [ Settings::class, 'register_settings' ] );
 
+		// Versioned data migrations (runs at most once per upgrade).
+		Migrations::init();
+
 		// Admin-only features.
 		if ( \is_admin() ) {
 			Settings_UI::init();
@@ -33,7 +38,7 @@ final class Plugin {
 			Attachment_Panel::init();
 		}
 
-		// Core optimizer hooks.
+		// Core optimizer hooks (also boots the bulk Queue).
 		Optimizer::init();
 
 		// Frontend lazy loading (when enabled).
@@ -41,6 +46,9 @@ final class Plugin {
 
 		// WebP frontend delivery (when enabled).
 		Webp_Delivery::init();
+
+		// Site Health diagnostics (capability matrix, failure counts).
+		Site_Health::init();
 
 		// WP-CLI commands.
 		if ( \defined( 'WP_CLI' ) && \WP_CLI ) {

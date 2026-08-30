@@ -56,16 +56,18 @@ final class Attachment_Panel {
 
 		// Backup check.
 		$file_path   = (string) get_attached_file( $attachment_id );
-		$backup_path = $file_path ? (string) preg_replace( '/(\\.([^.]+))$/', '-kitgenix-original$1', $file_path ) : '';
+		$backup_path = $file_path ? Optimizer::backup_path_for( $file_path ) : '';
 		$has_backup  = $backup_path && file_exists( $backup_path );
 
 		$nonce     = wp_create_nonce( 'kitgenix_image_optimizer_nonce' );
 		$status_id = 'kitgenix-attachment-panel-status-' . $attachment_id;
 
+		echo '<div class="kitgenix-attachment-panel">';
+
 		if ( $is_error ) {
 			// ---- Error state ----
 			$err_msg = isset( $opt_meta['error_message'] ) ? (string) $opt_meta['error_message'] : __( 'Optimization failed.', 'kitgenix-image-optimizer' );
-			echo '<p><span class="kitgenix-badge error">' . esc_html__( 'Error', 'kitgenix-image-optimizer' ) . '</span></p>';
+			echo '<p><span class="kitgenix-badge danger">' . esc_html__( 'Error', 'kitgenix-image-optimizer' ) . '</span></p>';
 			echo '<p class="description">' . esc_html( $err_msg ) . '</p>';
 			echo '<p><button type="button" class="button button-small kitgenix-attachment-optimize" data-attachment-id="' . absint( $attachment_id ) . '" data-nonce="' . esc_attr( $nonce ) . '">'
 				. esc_html__( 'Try Again', 'kitgenix-image-optimizer' )
@@ -79,7 +81,7 @@ final class Attachment_Panel {
 			$savings_pct    = isset( $opt_meta['savings_percent'] ) ? (float) $opt_meta['savings_percent'] : 0.0;
 			$optimized_at   = isset( $opt_meta['optimized_at'] ) ? (int) $opt_meta['optimized_at'] : 0;
 
-			echo '<p><span class="kitgenix-badge ok">' . esc_html__( 'Optimized', 'kitgenix-image-optimizer' ) . '</span></p>';
+			echo '<p><span class="kitgenix-badge success">' . esc_html__( 'Optimized', 'kitgenix-image-optimizer' ) . '</span></p>';
 
 			if ( $savings_bytes > 0 ) {
 				$date_label = '';
@@ -94,7 +96,7 @@ final class Attachment_Panel {
 				echo '<tr><th>' . esc_html__( 'Original', 'kitgenix-image-optimizer' ) . '</th><td>' . esc_html( size_format( $original_size ) ) . '</td></tr>';
 				echo '<tr><th>' . esc_html__( 'Optimized', 'kitgenix-image-optimizer' ) . '</th><td>' . esc_html( size_format( $optimized_size ) ) . '</td></tr>';
 				echo '<tr><th>' . esc_html__( 'Saved', 'kitgenix-image-optimizer' ) . '</th>'
-					. '<td><strong style="color:#1a7f4b">'
+					. '<td><strong class="kitgenix-attachment-panel-saved">'
 					. esc_html( number_format( $savings_pct, 1 ) . '% · ' . size_format( $savings_bytes ) )
 					. '</strong></td></tr>';
 				if ( $date_label ) {
@@ -103,16 +105,16 @@ final class Attachment_Panel {
 				echo '</table>';
 			}
 
-			echo '<p style="margin-top:10px">';
+			echo '<div class="kitgenix-button-group">';
 			echo '<button type="button" class="button button-small kitgenix-attachment-optimize" data-attachment-id="' . absint( $attachment_id ) . '" data-nonce="' . esc_attr( $nonce ) . '">'
 				. esc_html__( 'Re-optimize', 'kitgenix-image-optimizer' )
 				. '</button>';
 			if ( $has_backup ) {
-				echo ' <button type="button" class="button button-small kitgenix-attachment-restore" data-attachment-id="' . absint( $attachment_id ) . '" data-nonce="' . esc_attr( $nonce ) . '" style="color:#9c3b4b">'
+				echo '<button type="button" class="button button-small kitgenix-attachment-restore kitgenix-attachment-restore-btn" data-attachment-id="' . absint( $attachment_id ) . '" data-nonce="' . esc_attr( $nonce ) . '">'
 					. esc_html__( 'Restore Original', 'kitgenix-image-optimizer' )
 					. '</button>';
 			}
-			echo '</p>';
+			echo '</div>';
 
 		} else {
 			// ---- Not yet optimized ----
@@ -123,7 +125,8 @@ final class Attachment_Panel {
 				. '</button></p>';
 		}
 
-		echo '<div id="' . esc_attr( $status_id ) . '" style="margin-top:6px;font-size:12px;line-height:1.4"></div>';
+		echo '<div id="' . esc_attr( $status_id ) . '" class="kitgenix-attachment-panel-status"></div>';
+		echo '</div>';
 	}
 
 	// -------------------------------------------------------------------------
@@ -140,7 +143,7 @@ final class Attachment_Panel {
 			return;
 		}
 
-		wp_enqueue_style( 'kitgenix-admin-ui' );
+		wp_enqueue_style( 'kitgenix-image-optimizer-admin-ui' );
 
 		$plugin_file = defined( 'KITGENIX_IMAGE_OPTIMIZER_FILE' ) ? (string) KITGENIX_IMAGE_OPTIMIZER_FILE : '';
 		if ( $plugin_file ) {
@@ -151,17 +154,17 @@ final class Attachment_Panel {
 			wp_enqueue_style(
 				'kitgenix-image-optimizer-admin',
 				plugins_url( 'assets/css/admin.css', $plugin_file ),
-				[ 'kitgenix-admin-ui' ],
+				[ 'kitgenix-image-optimizer-admin-ui' ],
 				$css_ver
 			);
 		}
 
-		// Inline JS — AJAX handlers for Optimize and Restore buttons.
+		// Inline JS – AJAX handlers for Optimize and Restore buttons.
 		$nonce_json    = wp_json_encode( wp_create_nonce( 'kitgenix_image_optimizer_nonce' ) );
 		$ajax_url_json = wp_json_encode( admin_url( 'admin-ajax.php' ) );
 		$t_optimizing  = wp_json_encode( __( 'Optimizing…', 'kitgenix-image-optimizer' ) );
 		$t_done        = wp_json_encode( __( 'Optimized!', 'kitgenix-image-optimizer' ) );
-		$t_fail        = wp_json_encode( __( 'Failed — please retry.', 'kitgenix-image-optimizer' ) );
+		$t_fail        = wp_json_encode( __( 'Failed – please retry.', 'kitgenix-image-optimizer' ) );
 		$t_restoring   = wp_json_encode( __( 'Restoring…', 'kitgenix-image-optimizer' ) );
 		$t_confirm     = wp_json_encode( __( 'Restore original image? This will undo the optimization.', 'kitgenix-image-optimizer' ) );
 		$t_restore_err = wp_json_encode( __( 'Restore failed.', 'kitgenix-image-optimizer' ) );
