@@ -1,197 +1,215 @@
 === Kitgenix Image Optimizer ===
 Contributors: kitgenix
 Donate link: https://www.paypal.com/donate/?hosted_button_id=KALF36K6JJ9B2
-Tags: image optimization, compress images, resize images, webp, avif
+Tags: image optimization, image compression, webp, avif, media library
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.1
 Stable tag: 2.0.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
-Plugin URI: https://wordpress.org/plugins/kitgenix-image-optimizer/
-Author Plugin URI: https://wordpress.org/plugins/kitgenix-image-optimizer/
-Author: Kitgenix
-Author URI: https://wordpress.org/plugins/kitgenix-image-optimizer/
-Documentation URI: https://wordpress.org/plugins/kitgenix-image-optimizer/
-Support URI: https://wordpress.org/support/plugin/kitgenix-image-optimizer/
-Author Support URI: https://wordpress.org/support/plugin/kitgenix-image-optimizer/
-Feature Request URI: https://wordpress.org/support/plugin/kitgenix-image-optimizer/
 
-Optimize, compress, resize, and convert images to WebP/AVIF on upload, plus a resumable bulk optimizer for your Media Library. No external API.
+Compress, resize and bulk-optimize WordPress images locally, with WebP/AVIF sidecars, backups, diagnostics and WP-CLI.
 
 == Description ==
 
-**Kitgenix Image Optimizer** compresses, resizes, and converts images to WebP and AVIF automatically on upload, and includes a resumable bulk optimizer for the images already in your Media Library – all powered by WordPress's own `WP_Image_Editor` (GD or Imagick). There is no external image-optimization API, no per-image quota, no account to create, and no image data is ever sent off your server.
+**Kitgenix Image Optimizer** is a local WordPress image optimization plugin for compressing Media Library images, resizing oversized uploads and creating modern WebP or AVIF sidecar files without sending image files to a remote compression API.
 
-Every capability the plugin offers is detected live from your actual server before it's ever shown to you. If your host's GD or Imagick build can't encode WebP or AVIF, the plugin says so plainly on the Diagnostics tab instead of silently failing or claiming support it can't deliver.
+Image processing runs through WordPress's `WP_Image_Editor` layer using the image library available on the server, normally GD or Imagick. New uploads can be optimized automatically, while existing media can be processed through a persistent background queue or WP-CLI.
 
-This plugin is built for site owners, developers, and agencies who want faster page loads and a smaller Media Library footprint without handing image data to a third-party service or juggling per-image quotas and monthly limits.
+The plugin is designed for WordPress sites and WooCommerce stores that want image compression, size reduction and modern-format delivery without per-image credits or an external image-processing account.
 
-= How Image Optimization Works =
+Learn more about Kitgenix at [Kitgenix](https://kitgenix.com/).
 
-All processing happens locally on your own server through WordPress's built-in `WP_Image_Editor` abstraction (GD or Imagick, whichever your host provides). No image, file, or byte is ever transmitted to an external API or third-party image-processing service.
+= WordPress Image Optimization Features =
 
-Optimization runs on `wp_generate_attachment_metadata`, i.e. **after** WordPress has already generated every registered thumbnail size and applied `big_image_size_threshold` scaling – so the plugin works with core's own upload-time resizing rather than against it. Every generated sub-size is then optimized in place using your chosen compression profile.
+* Local JPEG, PNG, WebP, GIF and AVIF optimization when supported by the active WordPress image editor.
+* Automatic optimization after WordPress generates attachment metadata and registered image sizes.
+* Persistent bulk queue for existing Media Library images.
+* Bulk optimize or force re-optimize modes.
+* Pause, resume, stop and retry-failed queue controls.
+* WP-Cron background continuation so the browser does not need to remain open.
+* Compression presets plus custom JPEG, PNG, WebP and AVIF quality controls.
+* Maximum width/height integration with WordPress's `big_image_size_threshold` behaviour.
+* Optional WebP and AVIF sidecar generation for JPEG/PNG source images.
+* Frontend `<picture>` delivery when corresponding sidecars exist.
+* Optional metadata stripping.
+* Optional optimization of generated thumbnails/sub-sizes.
+* Optional original-image backups and restore workflow.
+* Optional native `loading` attribute management for frontend images.
+* Animated GIF protection.
+* Exclusions by MIME type, file size, dimensions, filename pattern, attachment ID and uploads-relative directory.
+* File/pixel/memory safety checks before expensive image decoding.
+* Atomic file replacement to reduce corruption risk if processing is interrupted.
+* "Do not replace with a larger file" protection.
+* Media Library status/savings information and per-image actions.
+* Aggregate optimization statistics with manual recalculation.
+* Diagnostics and WordPress Site Health integration.
+* Capped local activity/error log.
+* REST capability/status endpoints.
+* WP-CLI commands for optimization, queue control, status, statistics and restore.
 
-= Key Features =
+= Local Processing: No Image Optimization API Required =
 
-* **Zero external dependencies** – uses WordPress's built-in `WP_Image_Editor`, powered by GD or Imagick, whichever your server provides. No API keys, accounts, or subscriptions.
-* **Automatic optimization on upload** – compresses the main file and every generated thumbnail size as soon as an image is uploaded (can be disabled if you prefer manual/bulk-only optimization).
-* **Compression profiles** – Conservative, Balanced, Aggressive, and Maximum presets, or dial in exact JPEG, WebP, AVIF, and PNG quality values yourself.
-* **WebP & AVIF conversion** – optional sidecar copies (`photo.jpg.webp`, `photo.jpg.avif`) are generated alongside the original, only when your server can actually encode that format.
-* **Automatic frontend delivery of WebP/AVIF** – when sidecars exist, matching `<img>` tags in post content, featured images, and `wp_get_attachment_image()` output are automatically wrapped in a `<picture>` element (AVIF offered first, WebP second), so supporting browsers download the smaller format with no theme changes required.
-* **Native lazy loading** – optionally adds `loading="lazy"` to images throughout the page (not just the ones WordPress core already tags), while keeping the first image on the page eager so it doesn't delay your Largest Contentful Paint (LCP) element.
-* **Resumable bulk optimizer** – process your entire existing Media Library through a persisted queue with pause, resume, and "Retry Failed" controls; a scheduled background task keeps it moving even if you close the browser tab.
-* **Backup & restore** – an optional pre-optimization backup can be restored at any time; restoring regenerates WordPress's attachment metadata and thumbnail sizes so everything stays consistent.
-* **Regeneration-safe** – re-running "Regenerate Thumbnails" (or any metadata regeneration) only re-compresses sizes that actually changed, never wastefully re-processing untouched files.
-* **EXIF metadata stripping** – optionally strips EXIF/GPS metadata from images on both GD and Imagick, while EXIF orientation is always correctly applied before stripping.
-* **Transparency & animation preserved** – animated GIFs are left untouched by default and PNG/GIF transparency is preserved.
-* **Granular exclusions** – skip optimization by MIME type, minimum/maximum file size, minimum/maximum image dimensions, filename pattern, specific attachment IDs, or upload directory.
-* **Live server capability matrix** – a Diagnostics tab and a matching Site Health section show exactly what your GD/Imagick build supports: per-format encode/decode, active image editor, PHP memory limits, and upload limits.
-* **Media Library integration** – a Compression column shows per-image optimization status, percentage saved, and Optimize/Restore actions, plus a summary bar with total savings across your library.
-* **Safe by design** – images are validated before decoding (dimension and estimated-memory checks guard against decompression-bomb-style files), writes are atomic, and any "optimized" result that isn't actually smaller than the original is discarded automatically.
-* **REST API** – a `kitgenix-image-optimizer/v1` namespace with `/status` and `/capabilities` endpoints, plus a `kitgenix_optimizer` field added to every attachment on the core `wp/v2/media` REST endpoint.
-* **WP-CLI support** – `wp kitgenix-optimizer status|optimize|stats|restore|queue` for scripting, deployments, and server automation.
-* **Deliberate uninstall** – your actual Media Library image files are never deleted by this plugin under any setting; optional backup-file cleanup is opt-in only.
+The source image and generated image files remain on the WordPress server. The optimizer asks WordPress for an appropriate image editor, processes the file locally and writes the result back to the uploads directory.
 
-= Bulk Optimizing Your Media Library =
+There is no Kitgenix compression service and no requirement to upload images to a third-party optimization API. That avoids per-image quotas and keeps the actual image-processing data flow within the site/hosting environment.
 
-The Images tab drives a persisted, resumable queue rather than one long-running request. It can be paused, resumed, or restarted at any time, and a "Retry Failed" control re-queues anything that failed. A WP-Cron heartbeat (roughly once per minute) keeps the queue moving in the background even after you close the admin page, so libraries of any size can be processed without hitting PHP execution-time limits.
+= Automatic Upload Optimization =
 
-= Format Conversion & Frontend Delivery =
+When automatic optimization is enabled, the plugin hooks into WordPress attachment-metadata generation after WordPress has created registered image sizes. This lets the plugin work with the final master/sub-size set rather than racing the core thumbnail-generation process.
 
-WebP and AVIF are generated as optional sidecar files alongside your original JPEG/PNG image – never as a destructive, in-place conversion. Each format is gated behind a live `wp_image_editor_supports()` capability check, so the plugin will not let you enable a format your server's GD or Imagick build cannot actually encode. When a sidecar exists, the plugin automatically serves it to supporting browsers by wrapping the relevant `<img>` tag in a `<picture>` element (checking post content, featured images, and `wp_get_attachment_image()` output), with AVIF offered before WebP.
+Per-file fingerprints are used so regenerating attachment metadata does not automatically mean every unchanged file must be recompressed again.
 
-= Developer Features =
+= Compression Presets and Custom Quality =
 
-* Per-attachment optimization data is stored in post meta and exposed on the REST API.
-* Two filters let you adjust the built-in decompression-bomb safety thresholds.
-* WP-CLI commands cover status checks, single or bulk optimization, statistics, restore, and full queue control, suited to deployment scripts and cron-driven workflows.
-* A shared Kitgenix admin hub page (Kitgenix → menu) lists all installed and available Kitgenix plugins in one place.
+Administrators can choose a preset compression profile or use custom format settings. The code supports configurable JPEG quality, PNG compression level, WebP quality and AVIF quality, subject to what the server's active image editor can actually encode.
 
-See the Developer Reference section below for exact hook names, option keys, and REST routes.
+Modern-format options are capability-gated. If WordPress reports that the active server/editor cannot encode WebP or AVIF, the relevant functionality is not treated as available simply because a checkbox exists.
 
-= Compatibility =
+= WebP and AVIF Sidecars =
 
-Requires PHP's GD or Imagick extension (at least one is needed for WordPress to process images at all). The Diagnostics tab and Site Health report which one is active on your server and exactly which image formats it can encode and decode. WebP and AVIF conversion options are only offered when your server's image library can actually produce them.
+For JPEG/PNG source images, optional `.webp` and `.avif` sidecars can be generated alongside the original file. The original source remains the fallback.
+
+When sidecar delivery is enabled and the corresponding sidecar files exist, frontend image markup can be wrapped in a `<picture>` element containing AVIF and/or WebP `<source>` elements. AVIF is placed before WebP where both are available so a capable browser can choose the first supported modern format.
+
+The delivery logic only rewrites images that resolve within the site's WordPress uploads directory. Remote images are not rewritten as if local sidecar files existed.
+
+= Resizing Oversized Images =
+
+Configured maximum dimensions integrate with WordPress's big-image threshold so the site does not unnecessarily perform one resize in WordPress core and a second independent resize in the plugin.
+
+The optimizer preserves aspect ratio and relies on the active WordPress image editor for the actual image operation.
+
+= Metadata Stripping =
+
+Optional metadata stripping can remove image metadata during processing where supported by the active editor. This can reduce file size and may remove embedded EXIF/GPS information from images that are rewritten.
+
+Because metadata requirements differ between sites, administrators should keep this disabled if they need embedded camera/copyright/location metadata to remain in optimized derivatives.
+
+= Backups and Restore =
+
+If **Backup Originals** is enabled before optimization, the plugin can retain an original backup file. A per-image restore action and WP-CLI restore command can put that backup back in place.
+
+Restoring a master image regenerates WordPress attachment metadata and sub-sizes so the database dimensions and generated files stay aligned with the restored source.
+
+Backup deletion on uninstall is separately configurable. Media Library originals are never treated as disposable plugin settings data.
+
+= Bulk Optimization Queue =
+
+Large libraries are handled through persisted queue state rather than one giant admin request. The queue can be started in normal bulk mode or re-optimization mode, paused, resumed, stopped and asked to retry failed items.
+
+A scheduled background runner continues processing queue batches after the administrator leaves the page. The admin interface can poll queue status and display processed/failed counts without requiring one PHP request to remain open for the entire library.
+
+= Exclusion Rules =
+
+The code includes exclusions for:
+
+* Files below a minimum size.
+* Files above a maximum size.
+* Filename patterns.
+* MIME types.
+* Minimum width/height thresholds.
+* Maximum width/height thresholds.
+* Specific attachment IDs.
+* Upload-directory path fragments.
+
+Animated GIFs can also be skipped to avoid destroying animation during normal still-image processing.
+
+= Image Safety and Atomic Writes =
+
+Before decoding an image, the guard can consider file size, pixel dimensions and estimated memory requirements. This is intended to reject obviously unsafe or resource-exhausting image inputs before GD/Imagick attempts a costly decode.
+
+Optimized output is written to a temporary file and verified before it replaces the existing file. If the newly generated file is not actually smaller than the original, the optimized candidate can be discarded so "optimization" does not make the asset larger.
+
+= Lazy Loading =
+
+An optional frontend lazy-loading layer can add native `loading` attributes to `<img>` elements that do not already declare one. The first image is left eager to avoid automatically delaying the likely Largest Contentful Paint candidate, while later images can receive `loading="lazy"`.
+
+The lazy-loading processor skips admin and other unsuitable contexts and does not overwrite an existing loading attribute.
+
+= Media Library and Attachment Tools =
+
+The Media Library receives optimization status/savings information and per-image controls. An attachment panel provides additional context for a selected image, and administrators can trigger single-image optimization or restore where permitted.
+
+AJAX actions require both the plugin-level media capability and permission to edit the individual attachment.
+
+= Diagnostics and Site Health =
+
+Diagnostics report GD/Imagick availability and versions, preferred WordPress image editor, PHP memory information and encode/decode support for relevant formats. Site Health exposes the same capability picture and can warn when a feature such as WebP/AVIF conversion is enabled but the server cannot perform that conversion.
+
+Optimization failure counts and queue status are also available for troubleshooting.
+
+= REST API =
+
+The plugin registers authenticated/read-only diagnostic routes under:
+
+`kitgenix-image-optimizer/v1`
+
+Routes provide status and capability information. They are intended for administration/diagnostics rather than remote image upload or third-party compression.
+
+= WP-CLI =
+
+The command base is:
+
+`wp kitgenix-optimizer`
+
+The code includes commands for server/queue status, optimizing all eligible images or a single attachment, forced re-optimization, statistics, backup restore and queue actions (`start`, `pause`, `resume`, `stop`, `retry`, `status`).
+
+= Privacy and Storage =
+
+Images are processed locally. Plugin settings, queue state, statistics, logs and per-image optimization metadata are stored in WordPress. Optional backup and sidecar files are stored in the site's uploads area.
+
+The shared Kitgenix admin Hub can request public plugin-directory data from WordPress.org, and the admin stylesheet imports disclosed Google Fonts. Neither service receives image files for optimization.
+
+= Typical Uses =
+
+* Reduce image file sizes on a content-heavy WordPress site.
+* Optimize WooCommerce product imagery without a per-image SaaS plan.
+* Convert supported JPEG/PNG uploads to WebP/AVIF sidecars.
+* Process an existing Media Library in resumable batches.
+* Preserve recoverability by creating local original backups before optimization.
+* Diagnose whether a host can actually encode WebP or AVIF.
+* Automate image maintenance with WP-CLI.
 
 == Installation ==
 
-1. Upload the plugin folder to `/wp-content/plugins/`, or install it directly via Plugins → Add New in your WordPress admin.
-2. Activate the plugin through the "Plugins" screen in WordPress.
-3. Go to Kitgenix → Image Optimizer → Diagnostics to confirm your server's GD or Imagick support and exactly which image formats it can encode.
-4. Choose a compression profile and configure resizing/format-conversion options under Kitgenix → Image Optimizer → Settings (Balanced is a sensible default).
-5. Upload a new image – it is optimized automatically once "Optimize on Upload" is enabled (the default), or use the Images tab to bulk-optimize your existing library.
-6. No API key, account, or external service registration is required at any step.
-
-== External Services ==
-
-Kitgenix Image Optimizer does **not** send any image data to an external service. All compression, resizing, and format conversion (JPEG, PNG, GIF, WebP, and AVIF) is performed entirely on your own server, using PHP's GD or Imagick extension via WordPress's native `WP_Image_Editor` abstraction. No image, file, or byte generated by this plugin's optimization features ever leaves your site, and no third-party API key or account is required or supported.
-
-The plugin's shared Kitgenix admin hub screen (Kitgenix → Kitgenix in the admin menu) makes read-only requests to the public WordPress.org Plugins API (`api.wordpress.org`), via WordPress core's own `plugins_api()` function, to display active-install counts, star ratings, and icon/banner artwork for other Kitgenix plugins. These requests:
-
-* Only run when an administrator views that specific admin screen.
-* Send only the plugin slugs being looked up – no site content, image data, or personal information is included.
-* Are cached in a WordPress transient for up to 24 hours to minimize repeat requests.
-
-Data submitted to the WordPress.org Plugins API is governed by the WordPress.org Privacy Policy: https://wordpress.org/about/privacy/
-
-No other external service, API, or third party is contacted by this plugin.
-
-== Developer Reference ==
-
-**Settings option:** `kitgenix_image_optimizer_settings` (single array option holding all plugin settings; sanitized via `register_setting()`).
-
-**Other stored options:** `kitgenix_image_optimizer_event_log`, `kitgenix_image_optimizer_stats`, `kitgenix_image_optimizer_queue`, `kitgenix_image_optimizer_db_version`.
-
-**Post meta:** `_kitgenix_image_optimizer` – per-attachment optimization data (status, original/optimized size, savings, timestamp), stored on the attachment post and exposed read-only via REST as the `kitgenix_optimizer` field.
-
-**REST API routes** (namespace `kitgenix-image-optimizer/v1`, require the `upload_files` capability):
-
-* `GET /wp-json/kitgenix-image-optimizer/v1/status` – total/optimized/unoptimized attachment counts, total bytes saved, and current bulk-queue progress.
-* `GET /wp-json/kitgenix-image-optimizer/v1/capabilities` – the live GD/Imagick capability report shown on the Diagnostics tab.
-* `wp/v2/media` – gains a read-only `kitgenix_optimizer` field on every attachment.
-
-**Filters:**
-
-* `kitgenix_image_optimizer_max_pixels` – adjusts the maximum decoded pixel count allowed before an image is rejected as a possible decompression-bomb file. Default: `60000000`.
-* `kitgenix_image_optimizer_max_dimension` – adjusts the maximum single-axis pixel dimension allowed before an image is rejected. Default: `40000`.
-
-**WP-CLI:** `wp kitgenix-optimizer <status|optimize|stats|restore|queue>` – see `wp help kitgenix-optimizer <subcommand>` for arguments.
-
-**Scheduled events:** `kitgenix_image_optimizer_queue_tick` (custom one-minute cron schedule, drives the resumable bulk-optimization queue) and `kitgenix_image_optimizer_backfill_stats`.
+1. Install and activate **Kitgenix Image Optimizer**.
+2. Open **Kitgenix → Image Optimizer → Settings** and configure compression, resizing, WebP/AVIF, backups, lazy loading, and exclusions.
+3. Use **Images** for existing files and **Diagnostics** to check GD/Imagick and format support.
 
 == Frequently Asked Questions ==
 
-= Does this plugin require an external API or account? =
-No. It uses WordPress's native `WP_Image_Editor`, which delegates to your server's GD or Imagick PHP extension. No image is ever uploaded to a third-party service, and there is no API key or account to set up.
+= Does it require an image optimization API? =
+No. Processing is local through WordPress `WP_Image_Editor`. See **External Services** for non-image admin requests.
 
-= Is my image data sent anywhere? =
-No. All optimization happens locally on your own server. The only network request the plugin makes at all is a read-only, cached lookup of install counts/ratings for other Kitgenix plugins on the shared admin hub screen – no image or site content is ever included in that request. See the External Services section above for full details.
-
-= Will this reduce my image quality? =
-It depends on the compression profile you choose. Conservative is visually lossless; Balanced (the default) targets a strong quality-to-size ratio; Aggressive and Maximum trade more visible quality for smaller files. You can also set exact JPEG/WebP/AVIF/PNG quality values manually. An optimized result that isn't actually smaller than the original is automatically discarded, so optimization never makes a file larger.
-
-= How much will my images shrink? =
-It depends entirely on the image and the compression profile chosen – there is no fixed or guaranteed percentage. Photographic JPEGs straight from a camera typically see the largest gains; already-compressed or very small images may see little to no change, and the plugin simply leaves those alone rather than making them larger.
-
-= Does it support WebP and AVIF? =
-Yes, where your server supports them. Both are generated as optional sidecar copies alongside the original file, not destructive conversions, and both are gated behind a live capability check – the plugin will not let you enable a format your server can't actually encode. When sidecars exist, matching images are automatically served to supporting browsers via a `<picture>` element. Check the Diagnostics tab to see exactly what your server supports.
-
-= Are images optimized automatically when I upload them? =
-Yes, when "Optimize on Upload" is enabled (the default). Optimization runs after WordPress finishes generating all registered thumbnail sizes, so it works with core's own upload-time resizing instead of against it.
-
-= Can I bulk-optimize the images already in my Media Library? =
-Yes. The Images tab processes your existing library through a resumable, pausable queue rather than one long request, and a scheduled background task keeps it moving even if you close the admin page – so large libraries won't hit PHP timeouts.
-
-= What happens if thumbnails are regenerated later (e.g. by a "Regenerate Thumbnails" plugin)? =
-Only sub-sizes that actually changed are re-compressed; untouched sizes are left as they are, so regeneration never destructively re-processes the same file twice.
-
-= What image file types are supported? =
-JPEG, PNG, WebP, GIF, and AVIF images already in a format WordPress itself recognizes. Files that fail basic image validation, or whose dimensions/estimated memory use exceed a safety threshold, are skipped rather than processed, protecting against malformed files and decompression-bomb-style uploads.
-
-= Can I restore an image to its original, pre-optimization state? =
-Yes, but only if "Backup Originals" was enabled in Settings at the time that image was optimized. Restoring copies the backup back over the optimized file, removes any WebP/AVIF sidecars, and regenerates WordPress's attachment metadata and thumbnail sizes so everything stays consistent.
-
-= Can I set a maximum image size for uploads? =
-Yes, in the Resizing section of Settings. The configured maximum width/height is aligned with WordPress core's own `big_image_size_threshold`, so an oversized upload is resized once by core rather than resized twice.
-
-= Does it add lazy loading to images? =
-Optionally, yes. When enabled, the plugin adds `loading="lazy"` to images throughout the page that WordPress core doesn't already tag, while keeping the first image on the page eager so it doesn't delay your page's Largest Contentful Paint.
-
-= What happens to my data if I uninstall the plugin? =
-By default, uninstalling removes the plugin's settings, activity log, and per-image optimization records, but **never** your actual Media Library image files. A "Keep Settings & Data" option in Settings → Uninstall lets you preserve all of that instead. Backup files (the `-kitgenix-original` copies) are only deleted on uninstall if you explicitly enable "Delete Backup Files on Uninstall"; otherwise they are left in place.
-
-= Is there a WP-CLI command for automating image optimization? =
-Yes. Run `wp kitgenix-optimizer status|optimize|stats|restore|queue` to check status, run optimization, view savings statistics, restore backups, or manage the bulk optimization queue from the command line – useful for deployment scripts and server automation.
-
-= Will optimizing images slow down my Media Library screen? =
-No. The Media Library list view shows a Compression column with per-image status, but it doesn't run a live database scan on every page load – savings and status data are tracked in a small, incrementally-updated aggregate instead.
-
-= Does this plugin work with page builders and other themes? =
-Yes. Optimization runs at the WordPress core attachment-metadata level, so it is independent of your active theme or page builder. The optional `<picture>`-based WebP/AVIF delivery and lazy-loading features work on any HTML output containing standard `<img>` tags, including post content, featured images, and `wp_get_attachment_image()` calls.
+= Can I bulk-optimize and restore images? =
+Yes. The queue supports optimization, re-optimization, pause/resume, and failed-item retry. Restore is available when **Backup Originals** was enabled before optimization.
 
 == Screenshots ==
 
-1. The Settings tab, showing the Conservative/Balanced/Aggressive/Maximum compression profiles with their per-format JPEG, WebP, AVIF, and PNG quality values.
-2. The Images tab's resumable bulk optimizer, with live progress, pause/resume controls, and a "Retry Failed" action for the current queue run.
-3. The Diagnostics tab's live server capability matrix, listing GD and Imagick availability and per-format encode/decode support for JPEG, PNG, GIF, WebP, and AVIF.
-4. The Media Library list view with the added Compression column, showing per-image optimization status, percentage saved, and Optimize/Restore actions.
-5. The summary bar at the top of the Media Library, showing total images, how many are optimized, how many are pending, and total space saved.
-6. The WordPress Site Health status page showing the plugin's own "Your server can process images" test result and detailed debug information section.
-7. The Kitgenix admin hub screen, listing every installed and available Kitgenix plugin with its activation status and quick actions.
+1. Settings screen for compression presets, custom JPEG/PNG/WebP/AVIF quality, resizing, and metadata stripping.
+2. Images tab showing stats.
+3. Diagnostics tab reporting GD/Imagick availability, encode/decode support, and PHP memory limits.
+4. Media Library optimization status, savings information, and per-image restore actions.
+5. Log tab with searchable, paginated activity and error history.
 
-== Credits ==
-Built with ❤︎ by @kitgenix - https://kitgenix.com
+== External Services ==
+
+**WordPress.org Plugins API:** When an authorized administrator opens the shared Kitgenix Hub, WordPress core `plugins_api()` retrieves public Kitgenix plugin metadata. Requests use plugin slugs, are cached for up to 24 hours, and do not send images. Service: https://wordpress.org/plugins/ – Privacy: https://wordpress.org/about/privacy/
+
+**Google Fonts:** Kitgenix admin CSS imports Inter and Manrope on screens where it is loaded, so the administrator's browser may send connection data such as an IP address to Google. Service: https://fonts.google.com/ – Privacy: https://policies.google.com/privacy – Terms: https://policies.google.com/terms
+
+No image is sent to either service for optimization.
 
 == Upgrade Notice ==
 
 = 2.0.0 =
-Major update: adds AVIF conversion, a resumable/pausable bulk-optimization queue with background processing, a Diagnostics tab and Site Health checks, expanded exclusion rules, WP-CLI queue commands, and several security and reliability fixes (capability checks on AJAX handlers, decompression-bomb protection, atomic file writes). Review your Settings after updating, as compression preset labels and defaults have changed.
+Adds AVIF, resumable background bulk optimization, diagnostics, Site Health, expanded exclusions, WP-CLI queue controls, and security/reliability improvements.
 
 == Changelog ==
 
-= 2.0.0 (25 August 2026) =
+= 2.0.0 (31 August 2026) =
 
 * New: Added per-file change fingerprinting so thumbnail regeneration only re-compresses image files that have actually changed instead of repeatedly processing every existing file.
 * New: Added AVIF conversion alongside the existing WebP conversion feature.
