@@ -21,6 +21,7 @@ final class Settings_UI {
 		add_action( 'admin_enqueue_scripts', [ self::class, 'enqueue_assets' ], 20 );
 		add_action( 'admin_notices', [ self::class, 'render_admin_notices' ] );
 		add_action( 'admin_post_kitgenix_image_optimizer_clear_event_log', [ self::class, 'handle_clear_event_log' ] );
+		add_action( 'admin_post_kitgenix_image_optimizer_save_log_retention', [ self::class, 'handle_save_log_retention' ] );
 		add_action( 'update_option_' . Settings::OPTION_NAME, [ self::class, 'on_settings_saved' ], 10, 3 );
 	}
 
@@ -195,6 +196,29 @@ final class Settings_UI {
 		wp_safe_redirect(
 			add_query_arg(
 				[ 'page' => 'kitgenix-image-optimizer', 'tab' => 'log', 'log-cleared' => '1' ],
+				admin_url( 'admin.php' )
+			)
+		);
+		exit;
+	}
+
+	/**
+	 * Handle the log-retention admin-post action.
+	 */
+	public static function handle_save_log_retention(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Insufficient permissions.', 'kitgenix-image-optimizer' ) );
+		}
+
+		check_admin_referer( 'kitgenix_image_optimizer_save_log_retention' );
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified via check_admin_referer() above
+		$days = isset( $_POST['log_retention_days'] ) ? (int) $_POST['log_retention_days'] : Event_Log::get_retention_days();
+		Event_Log::set_retention_days( $days );
+
+		wp_safe_redirect(
+			add_query_arg(
+				[ 'page' => 'kitgenix-image-optimizer', 'tab' => 'log', 'log-retention-saved' => '1' ],
 				admin_url( 'admin.php' )
 			)
 		);
@@ -1050,6 +1074,25 @@ final class Settings_UI {
 
 		self::render_log_reference_table();
 
+		$retention_days = Event_Log::get_retention_days();
+
+		echo '<div class="kitgenix-setting-row" style="margin-top:16px">'
+			. '<div class="kitgenix-setting-row-label"><label for="kitgenix-log-retention-days">' . esc_html__( 'Auto-delete logs after', 'kitgenix-image-optimizer' ) . '</label>'
+			. '<p class="kitgenix-setting-row-desc">' . esc_html__( 'Log entries older than the selected period are removed automatically.', 'kitgenix-image-optimizer' ) . '</p></div>'
+			. '<div class="kitgenix-setting-row-control">'
+			. '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="display:flex;align-items:center;gap:8px;">'
+			. '<input type="hidden" name="action" value="kitgenix_image_optimizer_save_log_retention" />'
+			. wp_nonce_field( 'kitgenix_image_optimizer_save_log_retention', '_wpnonce', true, false )
+			. '<select id="kitgenix-log-retention-days" name="log_retention_days">'
+			. '<option value="7" ' . selected( $retention_days, 7, false ) . '>' . esc_html__( '7 days', 'kitgenix-image-optimizer' ) . '</option>'
+			. '<option value="14" ' . selected( $retention_days, 14, false ) . '>' . esc_html__( '14 days', 'kitgenix-image-optimizer' ) . '</option>'
+			. '<option value="30" ' . selected( $retention_days, 30, false ) . '>' . esc_html__( '30 days', 'kitgenix-image-optimizer' ) . '</option>'
+			. '</select>'
+			. '<button type="submit" class="button button-secondary">' . esc_html__( 'Save', 'kitgenix-image-optimizer' ) . '</button>'
+			. '</form>'
+			. '</div>'
+			. '</div>';
+
 		echo '<div class="kitgenix-button-group" style="margin-top:16px">'
 			. '<a class="button button-secondary" href="' . esc_url( $clear_url ) . '" onclick="return confirm(\'' . esc_js( __( 'Clear all log entries?', 'kitgenix-image-optimizer' ) ) . '\')">' . esc_html__( 'Clear Log', 'kitgenix-image-optimizer' ) . '</a>'
 			. '</div>';
@@ -1114,6 +1157,7 @@ final class Settings_UI {
 			. '<div class="kitgenix-button-group kitgenix-button-group-stack">'
 			. '<a class="button button-secondary" href="' . esc_url( 'https://kitgenix.com/plugins/kitgenix-image-optimizer/documentation/' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Documentation', 'kitgenix-image-optimizer' ) . '</a>'
 			. '<a class="button button-primary" href="' . esc_url( 'https://kitgenix.com/plugins/kitgenix-image-optimizer/support' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Request Support', 'kitgenix-image-optimizer' ) . '</a>'
+			. '<a class="button button-secondary" href="' . esc_url( 'https://roadmap.kitgenix.com/?product=image-optimizer' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Request a Feature', 'kitgenix-image-optimizer' ) . '</a>'
 			. '</div>'
 			. '</div></div>';
 

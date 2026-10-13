@@ -5,9 +5,10 @@ Tags: image optimization, image compression, webp, avif, media library
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 2.0.0
+Stable tag: 2.1.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
+PluginScore Verification: pluginscore-verify-f5d18f8e683a8cc18cb05f6edbe91503
 
 Compress, resize and bulk-optimize WordPress images locally, with WebP/AVIF sidecars, backups, diagnostics and WP-CLI.
 
@@ -204,10 +205,16 @@ No image is sent to either service for optimization.
 
 == Upgrade Notice ==
 
-= 2.0.0 =
-Adds AVIF, resumable background bulk optimization, diagnostics, Site Health, expanded exclusions, WP-CLI queue controls, and security/reliability improvements.
+= 2.1.0 =
+Version 2.1.0 is recommended for all sites.
 
 == Changelog ==
+
+= 2.1.0 (13 October 2026) =
+
+* New: Added a configurable log auto-delete setting (7/14/30 days) to automatically remove old event log entries.
+* New: Added a "Request a Feature" button to the Need Help? sidebar, linking directly to this plugin's page on the Kitgenix roadmap (https://roadmap.kitgenix.com).
+* New: Added a "Request a Feature" banner below the plugin grid on the Kitgenix Hub page, linking to the shared Kitgenix roadmap.
 
 = 2.0.0 (31 August 2026) =
 

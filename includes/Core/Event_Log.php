@@ -17,8 +17,26 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Event_Log {
 
-	private const OPTION_KEY  = 'kitgenix_image_optimizer_event_log';
-	private const MAX_ENTRIES = 100;
+	private const OPTION_KEY             = 'kitgenix_image_optimizer_event_log';
+	private const MAX_ENTRIES            = 100;
+	private const RETENTION_OPTION_KEY   = 'kitgenix_image_optimizer_log_retention_days';
+	private const DEFAULT_RETENTION_DAYS = 30;
+	private const ALLOWED_RETENTION_DAYS = [ 7, 14, 30 ];
+	private const PRUNE_CRON_HOOK        = 'kitgenix_image_optimizer_prune_event_log';
+
+	public static function init(): void {
+		add_action( self::PRUNE_CRON_HOOK, [ self::class, 'prune' ] );
+		add_action( 'admin_init', [ self::class, 'maybe_schedule_prune_cron' ] );
+	}
+
+	/**
+	 * Schedule the daily housekeeping cron event if it isn't already scheduled.
+	 */
+	public static function maybe_schedule_prune_cron(): void {
+		if ( ! wp_next_scheduled( self::PRUNE_CRON_HOOK ) ) {
+			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', self::PRUNE_CRON_HOOK );
+		}
+	}
 
 	/**
 	 * Record an event to the log.
@@ -38,11 +56,65 @@ final class Event_Log {
 			'code'    => sanitize_text_field( $code ),
 		];
 
+		$log = self::prune_entries( $log );
+
+		update_option( self::OPTION_KEY, $log, false );
+	}
+
+	/**
+	 * Remove entries older than the configured retention period, and re-apply
+	 * the entry-count cap. Shared by record() and the daily cron housekeeping.
+	 *
+	 * @param array<int,array<string,mixed>> $log
+	 * @return array<int,array<string,mixed>>
+	 */
+	private static function prune_entries( array $log ): array {
+		$cutoff = time() - ( self::get_retention_days() * DAY_IN_SECONDS );
+
+		$log = array_values(
+			array_filter(
+				$log,
+				static function ( array $entry ) use ( $cutoff ): bool {
+					$time = isset( $entry['time'] ) ? (int) $entry['time'] : 0;
+					return $time >= $cutoff;
+				}
+			)
+		);
+
 		if ( count( $log ) > self::MAX_ENTRIES ) {
 			$log = array_slice( $log, -self::MAX_ENTRIES );
 		}
 
-		update_option( self::OPTION_KEY, $log, false );
+		return $log;
+	}
+
+	/**
+	 * Prune entries older than the configured retention period.
+	 * Runs on the daily housekeeping cron; also safe to call directly.
+	 */
+	public static function prune(): void {
+		$log    = self::get_raw_log();
+		$pruned = self::prune_entries( $log );
+
+		if ( count( $pruned ) !== count( $log ) ) {
+			update_option( self::OPTION_KEY, $pruned, false );
+		}
+	}
+
+	/**
+	 * Return the configured log retention period in days (7, 14, or 30).
+	 */
+	public static function get_retention_days(): int {
+		$days = (int) get_option( self::RETENTION_OPTION_KEY, self::DEFAULT_RETENTION_DAYS );
+		return in_array( $days, self::ALLOWED_RETENTION_DAYS, true ) ? $days : self::DEFAULT_RETENTION_DAYS;
+	}
+
+	/**
+	 * Set the log retention period in days, clamped to the allowed values.
+	 */
+	public static function set_retention_days( int $days ): void {
+		$days = in_array( $days, self::ALLOWED_RETENTION_DAYS, true ) ? $days : self::DEFAULT_RETENTION_DAYS;
+		update_option( self::RETENTION_OPTION_KEY, $days, false );
 	}
 
 	/**

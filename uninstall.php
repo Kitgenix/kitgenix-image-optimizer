@@ -32,6 +32,7 @@ if ( $kitgenix_keep_data ) {
 // Delete plugin options.
 delete_option( 'kitgenix_image_optimizer_settings' );
 delete_option( 'kitgenix_image_optimizer_event_log' );
+delete_option( 'kitgenix_image_optimizer_log_retention_days' );
 delete_option( 'kitgenix_image_optimizer_stats' );
 delete_option( 'kitgenix_image_optimizer_queue' );
 delete_option( 'kitgenix_image_optimizer_db_version' );
@@ -43,6 +44,7 @@ if ( $kitgenix_timestamp ) {
 	wp_unschedule_event( $kitgenix_timestamp, $kitgenix_cron_hook );
 }
 wp_clear_scheduled_hook( 'kitgenix_image_optimizer_backfill_stats' );
+wp_clear_scheduled_hook( 'kitgenix_image_optimizer_prune_event_log' );
 
 // Delete per-attachment optimization meta for all attachments.
 global $wpdb;

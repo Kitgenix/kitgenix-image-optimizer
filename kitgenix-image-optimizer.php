@@ -8,7 +8,7 @@
  * Author Support URI: https://kitgenix.com/support/plugin/kitgenix-image-optimizer/
  * Feature Request URI: https://kitgenix.com/support/plugin/kitgenix-image-optimizer/
  * Description:       Optimize, compress, and resize images in your WordPress media library with automatic on-upload processing and bulk optimization tools.
- * Version:           2.0.0
+ * Version:           2.1.0
  * Requires at least: 6.0
  * Tested up to:      7.1
  * Requires PHP:      8.1
@@ -48,7 +48,7 @@ defined( 'ABSPATH' ) || exit;
 use KitgenixImageOptimizer\Plugin;
 
 if ( ! defined( 'KITGENIX_IMAGE_OPTIMIZER_VERSION' ) ) {
-	define( 'KITGENIX_IMAGE_OPTIMIZER_VERSION', '2.0.0' );
+	define( 'KITGENIX_IMAGE_OPTIMIZER_VERSION', '2.1.0' );
 }
 if ( ! defined( 'KITGENIX_IMAGE_OPTIMIZER_FILE' ) ) {
 	define( 'KITGENIX_IMAGE_OPTIMIZER_FILE', __FILE__ );
@@ -487,6 +487,14 @@ if ( ! function_exists( 'kitgenix_render_admin_page' ) ) {
 				'page'     => 'kitgenix-affiliate-link-manager',
 				'requires' => __( 'Manage affiliate short links, branded redirects, and click tracking from one WordPress dashboard.', 'kitgenix-image-optimizer' ),
 			],
+			[
+				'id'       => 'database_cleaner',
+				'name'     => __( 'Database Cleaner', 'kitgenix-image-optimizer' ),
+				'slug'     => 'kitgenix-database-cleaner',
+				'file'     => 'kitgenix-database-cleaner/kitgenix-database-cleaner.php',
+				'page'     => 'kitgenix-database-cleaner',
+				'requires' => __( 'Scan and clean your WordPress database safely, with plugin/theme attribution for every item found and a built-in recycle bin so nothing is ever deleted without a way back.', 'kitgenix-image-optimizer' ),
+			],
 		];
 
 		$slugs = [];
@@ -635,7 +643,17 @@ if ( ! function_exists( 'kitgenix_render_admin_page' ) ) {
 				. '</div>';
 		}
 
-		echo '</div></div></div></div>';
+		echo '</div>'; // .kitgenix-hub-grid
+
+		echo '<div class="kitgenix-hub-feature-banner">'
+			. '<div class="kitgenix-hub-feature-banner-copy">'
+			. '<h2>' . esc_html__( 'Have an idea for a new feature?', 'kitgenix-image-optimizer' ) . '</h2>'
+			. '<p>' . esc_html__( 'Browse the roadmap, vote on ideas, and submit feature requests for any Kitgenix plugin.', 'kitgenix-image-optimizer' ) . '</p>'
+			. '</div>'
+			. '<a class="button button-primary" href="' . esc_url( 'https://roadmap.kitgenix.com' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Request a Feature', 'kitgenix-image-optimizer' ) . '</a>'
+			. '</div>';
+
+		echo '</div></div></div>'; // .kitgenix-hub, .kitgenix-hub-wrap, .wrap
 	}
 }
 

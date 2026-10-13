@@ -12,6 +12,7 @@ defined( 'ABSPATH' ) || exit;
 use KitgenixImageOptimizer\Admin\Attachment_Panel;
 use KitgenixImageOptimizer\Admin\Settings_UI;
 use KitgenixImageOptimizer\Core\CLI;
+use KitgenixImageOptimizer\Core\Event_Log;
 use KitgenixImageOptimizer\Core\Lazy_Load;
 use KitgenixImageOptimizer\Core\Media_Column;
 use KitgenixImageOptimizer\Core\Migrations;
@@ -30,6 +31,9 @@ final class Plugin {
 
 		// Versioned data migrations (runs at most once per upgrade).
 		Migrations::init();
+
+		// Event log retention housekeeping (daily cron prune).
+		Event_Log::init();
 
 		// Admin-only features.
 		if ( \is_admin() ) {
