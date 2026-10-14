@@ -5,10 +5,10 @@ Tags: image optimization, image compression, webp, avif, media library
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 2.1.0
+Stable tag: 2.1.2
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
-PluginScore Verification: pluginscore-verify-f5d18f8e683a8cc18cb05f6edbe91503
+PluginScore Verification: pluginscore-verify-741bf39e25a394a89c63aa15dcd1b030
 
 Compress, resize and bulk-optimize WordPress images locally, with WebP/AVIF sidecars, backups, diagnostics and WP-CLI.
 
@@ -205,10 +205,18 @@ No image is sent to either service for optimization.
 
 == Upgrade Notice ==
 
-= 2.1.0 =
-Version 2.1.0 is recommended for all sites.
+= 2.1.2 =
+Version 2.1.2 is recommended for all sites.
 
 == Changelog ==
+
+= 2.1.2 (13 October 2026) =
+
+* Fix: Bump version to 2.1.2 across the plugin.
+
+= 2.1.1 (13 October 2026) =
+
+* Fix: Updated PluginScore Verification code.
 
 = 2.1.0 (13 October 2026) =
 

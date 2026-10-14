@@ -8,7 +8,7 @@
  * Author Support URI: https://kitgenix.com/support/plugin/kitgenix-image-optimizer/
  * Feature Request URI: https://kitgenix.com/support/plugin/kitgenix-image-optimizer/
  * Description:       Optimize, compress, and resize images in your WordPress media library with automatic on-upload processing and bulk optimization tools.
- * Version:           2.1.0
+ * Version:           2.1.2
  * Requires at least: 6.0
  * Tested up to:      7.1
  * Requires PHP:      8.1
@@ -48,7 +48,7 @@ defined( 'ABSPATH' ) || exit;
 use KitgenixImageOptimizer\Plugin;
 
 if ( ! defined( 'KITGENIX_IMAGE_OPTIMIZER_VERSION' ) ) {
-	define( 'KITGENIX_IMAGE_OPTIMIZER_VERSION', '2.1.0' );
+	define( 'KITGENIX_IMAGE_OPTIMIZER_VERSION', '2.1.2' );
 }
 if ( ! defined( 'KITGENIX_IMAGE_OPTIMIZER_FILE' ) ) {
 	define( 'KITGENIX_IMAGE_OPTIMIZER_FILE', __FILE__ );
